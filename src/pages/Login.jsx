@@ -26,7 +26,7 @@ const Login = () => {
         }));
 
         toast.success(response.message || "Đăng nhập thành công!");
-        setTimeout(() => window.location.href = "/", 2000);
+        setTimeout(() => window.location.href = "/", 1000);
       } else {
         toast.error("Đăng nhập thất bại! Vui lòng thử lại.");
       }

@@ -1,9 +1,9 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const PrivateRoute = ({ element }) => {
-    const userId = localStorage.getItem("userId"); // Lấy User ID từ localStorage
-
-    return userId ? element : <Navigate to="/login" replace />;
+const PrivateRoute = () => {
+    const userId = useSelector((state) => state.auth.userId); // Kiểm tra trạng thái đăng nhập
+    return userId ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-export default PrivateRoute
+export default PrivateRoute;
