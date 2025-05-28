@@ -11,7 +11,6 @@ const AddPoin = ({handleShow}) => {
     console.log("Data gửi API", addPoinData)
     return (
         <>  
-            
             <div className="flex flex-col justify-center items-center gap-4 w-[400px] h-auto px-6 py-5 bg-white rounded-lg 
             shadow-lg border border-gray-300 pointer-events-auto z-100 relative">
                 <div className="absolute top-2 right-2">
