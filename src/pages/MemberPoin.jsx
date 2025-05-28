@@ -3,9 +3,11 @@ import MainLayout from '../layout/MainLayout'
 import { FaFilter } from "react-icons/fa"
 import { ListMember, AddPoin, UsePoin } from '../components/member'
 import { useSelector } from 'react-redux'
+import { Loading } from '../components'
 import axios from 'axios'
 const MemberPoin = () => {
     const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
     const modalRef = useRef(null);
      const [activeTab, setActiveTab] = useState(null);
     const [searchParams, setSearchParams] = useState({
@@ -50,6 +52,7 @@ const MemberPoin = () => {
             axios.post('https://member.sayaka.vn/api/transactions/get-list-transactions',postData,config)
                 .then(response => {
                     setData(response.data);
+                    setLoading(false)
                 })
                 .catch(error => {
                     console.error("Error fetching MemberPoin data:", error);
@@ -164,6 +167,9 @@ const MemberPoin = () => {
                 </div>
             </div>
 
+          {
+            loading ? <Loading/>:(
+
             <div className="overflow-auto min-h-[calc(100vh-300px)]">
                 {data && data.length > 0 ? (
                     <ListMember data={data} />
@@ -173,6 +179,8 @@ const MemberPoin = () => {
                     </div>
                 )}
             </div>
+            )
+          }
 
         </MainLayout>
     )
