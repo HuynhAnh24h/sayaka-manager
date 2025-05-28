@@ -41,7 +41,12 @@ const MemberPoin = () => {
                 transactionType: 0,
                 memberPhone: ""
             }
-            axios.post('https://member.sayaka.vn/api/transactions/get-list-transactions', postData)
+            const config = {
+            headers: {
+                "userId": "c533cdad-2d0d-4654-8c5d-c5eac8428284" // Thay thế bằng User ID thực tế
+            }
+        };
+            axios.post('https://member.sayaka.vn/api/transactions/get-list-transactions',postData,config)
                 .then(response => {
                     setData(response.data);
                 })
@@ -88,12 +93,12 @@ const MemberPoin = () => {
              {activeTab === "addPoin" && (
                 <div ref={modalRef} className="fixed top-0 left-0 right-0 bg-[rgba(0,0,0,0.1)] pointer-events-none
                 p-4 shadow-md z-50 h-screen flex justify-center items-center">
-                    <AddPoin />
+                    <AddPoin handleShow={setActiveTab} />
                 </div>
             )}
             {activeTab === "usePoin" && (<div ref={modalRef} className="fixed top-0 left-0 right-0 bg-[rgba(0,0,0,0.1)] pointer-events-none 
             p-4 shadow-md z-50 h-screen flex justify-center items-center">
-                    <UsePoin />
+                    <UsePoin handleShow={setActiveTab}/>
             </div>)}
 
             <div className="mb-4">
