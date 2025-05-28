@@ -2,6 +2,7 @@ import { useEffect, useState,useRef} from 'react'
 import MainLayout from '../layout/MainLayout'
 import { FaFilter } from "react-icons/fa"
 import { ListMember, AddPoin, UsePoin } from '../components/member'
+import { useSelector } from 'react-redux'
 import axios from 'axios'
 const MemberPoin = () => {
     const [data, setData] = useState(null);
@@ -15,9 +16,9 @@ const MemberPoin = () => {
         transactionType: 0,
         memberPhone: "",
         startDate: "",
-        endDate: ""
+        endDate: "",
     });
-
+    const userIdLocal = useSelector((state) => state.auth.userId);
     const handleSearch = () => {
         console.log("searchParams", searchParams);
         // axios.post("https://member.sayaka.vn/api/transactions/get-list-transactions", searchParams)
@@ -43,7 +44,7 @@ const MemberPoin = () => {
             }
             const config = {
             headers: {
-                "userId": "c533cdad-2d0d-4654-8c5d-c5eac8428284" // Thay thế bằng User ID thực tế
+                "userId": userIdLocal // Thay thế bằng User ID thực tế
             }
         };
             axios.post('https://member.sayaka.vn/api/transactions/get-list-transactions',postData,config)
@@ -63,10 +64,7 @@ const MemberPoin = () => {
     if (!activeTab) return;
     const handleClickOutside = (event) => {
         if (modalRef.current && !modalRef.current.contains(event.target)) {
-            console.log("Click bên ngoài modal -> Đóng!");
             setActiveTab(null); // Đóng popup
-        } else {
-            console.log("Click bên trong modal -> Không làm gì cả!");
         }
     };
 

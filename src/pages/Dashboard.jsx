@@ -1,13 +1,14 @@
+import React from 'react'
 import MainLayout from '../layout/MainLayout'
 
-const HomeKT = () => {
+const Dashboard = () => {
   return (
     <MainLayout>
         <div>
-            This is the HomeKT page
+            This is DashBoard
         </div>
     </MainLayout>
   )
 }
 
-export default HomeKT
+export default Dashboard

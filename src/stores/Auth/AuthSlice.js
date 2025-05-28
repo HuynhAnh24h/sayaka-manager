@@ -1,0 +1,43 @@
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+    userId: localStorage.getItem("userId") || null,
+    restaurantId: localStorage.getItem("restaurantId") || null,
+    restaurantName: localStorage.getItem("restaurantName") || "",
+    userFullName: localStorage.getItem("userFullName") || "",
+};
+
+const authSlice = createSlice({
+    name: "auth",
+    initialState,
+    reducers: {
+        login: (state, action) => {
+            const { userId, restaurantId, restaurantName, userFullName } = action.payload;
+            state.userId = userId;
+            state.restaurantId = restaurantId;
+            state.restaurantName = restaurantName;
+            state.userFullName = userFullName;
+
+            // Lưu vào localStorage để duy trì trạng thái sau khi refresh
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("restaurantId", restaurantId);
+            localStorage.setItem("restaurantName", restaurantName);
+            localStorage.setItem("userFullName", userFullName);
+        },
+        logout: (state) => {
+            state.userId = null;
+            state.restaurantId = null;
+            state.restaurantName = "";
+            state.userFullName = "";
+
+            // Xóa dữ liệu khỏi localStorage khi đăng xuất
+            localStorage.removeItem("userId");
+            localStorage.removeItem("restaurantId");
+            localStorage.removeItem("restaurantName");
+            localStorage.removeItem("userFullName");
+        }
+    }
+});
+
+export const { login, logout } = authSlice.actions;
+export default authSlice.reducer;

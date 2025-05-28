@@ -23,35 +23,30 @@ const UsePoin = ({handleShow}) => {
                               className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800  transition"
                               placeholder="Nhập mã khách hàng..."
                           />
+                            <div className="flex flex-col justify-between items-start mt-1">
+                                <p className="text-[12px] text-green-800">Tên KH: <span className="font-bold">Huỳnh Anh</span></p>
+                                <div className="flex flex-col items-start">
+                                    <p className="text-[12px] text-green-800">Số ĐT: <span className="font-bold">0971508299</span></p>
+                                    <p className="text-[12px] text-green-800">Số Dư: <span className="font-bold">16.000</span></p>
+                                </div>
+                            </div>
+                            <p className="text-[12px] text-red-800">Mã không hợp lệ</p>
                       </div>
   
                       {/* Mã hóa đơn */}
                       <div className="flex flex-col">
                           <label htmlFor="ma_hoa_don" className="block text-sm font-medium text-gray-600 mb-1">
-                              Mã hóa đơn
+                              Số điểm sử dụng
                           </label>
                           <input
                               type="text"
                               name="ma_hoa_don"
                               id="ma_hoa_don"
                               className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800  transition"
-                              placeholder="Nhập mã hóa đơn..."
+                              placeholder="Nhập điểm sử dụng..."
                           />
                       </div>
-  
-                      {/* Giá trị hóa đơn */}
-                      <div className="flex flex-col">
-                          <label htmlFor="gia_tri_hoa_don" className="block text-sm font-medium text-gray-600 mb-1">
-                              Giá trị hóa đơn
-                          </label>
-                          <input
-                              type="text"
-                              name="gia_tri_hoa_don"
-                              id="gia_tri_hoa_don"
-                              className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800  transition"
-                              placeholder="Nhập giá trị hóa đơn..."
-                          />
-                      </div>
+
   
                       {/* Nút Gửi */}
                       <div className="flex justify-end gap-2">
