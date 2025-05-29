@@ -1,137 +1,57 @@
-import { IoCloseCircle } from "react-icons/io5"
-import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
-import axios from "axios"
+import { useState, useEffect } from "react";
+import { IoCloseCircle } from "react-icons/io5";
+import { useSelector } from "react-redux";
 import { formatNumber } from "../../helper/FormatData";
+import { getMemberInfo, useMemberPoints } from "../../apis/memberTransaction";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import ValidateSubmitModal from "../common/ValidateSubmitModal";
+
 const UsePoin = ({ handleShow }) => {
-    const [useDataFetch,setUseDataFetch] = useState(null)
-    const [usePointData, setUsePointData] = useState({
-        memberId: "",
-        restaurantId: useSelector((state) => state.auth.restaurantId),
-        pointUse: "",
-        cashierId: useSelector((state)=>state.auth.userId),
-    })
-    const config = {
-        headers:{
-            "userId": useSelector((state)=>state.auth.userId)
-        }
-    }
-     useEffect(() => {
-        try {
-            axios.get(`https://member.sayaka.vn/api/member/` + `${usePointData.memberId}`, config)
-                .then(response => {
-                    console.log(response.data);
-                    setUseDataFetch(response.data.data)
-                })
-                .catch(error => {
-                    console.error("Error fetching MemberPoin data:", error);
-                });
+    const userId = useSelector((state) => state.auth.userId);
+    const restaurantId = useSelector((state) => state.auth.restaurantId);
+    const [dataFetch, setDataFetch] = useState(null);
+    const [usePointData, setUsePointData] = useState({ memberId: "", pointUse: "", cashierId: userId, restaurantId });
+    const [toogle,setToogle] = useState(false)
+    const handleChange = ({ target: { name, value } }) => setUsePointData(prev => ({ ...prev, [name]: value }));
 
-        } catch (error) {
-            console.log(error.message)
-        }
+    useEffect(() => {
+        if (!usePointData.memberId) return;
+        getMemberInfo(usePointData.memberId, userId).then(data => setDataFetch(data));
+    }, [usePointData.memberId]);
 
-    }, [usePointData.memberId]); // Theo dõi danh sách ID khách hàng
-     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUsePointData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+    const handleToogle = () =>{setToogle((prev)=>!prev)}
+
+    const handleSubmit = async () => {
+        const response = await useMemberPoints(usePointData, userId);
+        response.status !== "Success" ? toast.error(response.message) :( toast.success(response.message), handleShow(null));
     };
-    const postUsePoint = async() => {
-        try{
-            const post = await axios.post("https://member.sayaka.vn/api/transactions/use-point",usePointData,config)
-            if(post.data.status != 'Success'){
-                toast.error(post.data.message);
-            }else{
-                toast.success(post.data.message)
-            }
-        }catch(err){
-            console.log(err.message)
-        }
-    }
+
     return (
-        <>
-            <div className="flex flex-col justify-center items-center gap-4 w-[400px] h-auto px-6 py-5 bg-white rounded-lg 
-              shadow-lg border border-gray-300 pointer-events-auto z-100 relative">
-                <div className="absolute top-2 right-2">
-                    <button onClick={() => handleShow(null)} className="text-gray-500 hover:text-gray-700 transition">
-                        <IoCloseCircle size={25} />
-                    </button>
-                </div>
-                <h1 className="text-2xl font-bold text-gray-700">Sử dụng điểm</h1>
+        <div className="flex flex-col justify-center items-center gap-4 w-[400px] p-5 bg-white rounded-lg shadow-lg border border-gray-300 relative pointer-events-auto z-100">
+            <button onClick={() => handleShow(null)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition">
+                <IoCloseCircle size={25} />
+            </button>
+            <h1 className="text-2xl font-bold text-gray-700">{toogle ? "Xác nhận giao dịch": "Sử dụng điểm"}</h1>
+            {
+                toogle ?(<ValidateSubmitModal orderValue ={usePointData.pointUse} memberName={dataFetch.memberName} handleSubmit={handleSubmit} handleToggleModal={handleToogle}/>) :(
                 <div className="w-full space-y-4">
-                    {/* Mã khách hàng */}
-                    <div className="flex flex-col">
-                        <label htmlFor="ma_khach_hang" className="block text-sm font-medium text-gray-600 mb-1">
-                            Mã khách hàng
-                        </label>
-                        <input
-                            type="text"
-                            name="memberId"
-                            value={usePointData.memberId}
-                            onChange={handleChange}
-                            id="ma_khach_hang"
-                            className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800  transition"
-                            placeholder="Nhập mã khách hàng..."
-                        />
-                        <div className="flex flex-col justify-between items-start mt-1">
-                            {
-                                useDataFetch ? (
-                                    <>
-                                        <div>
-                                            <p className="text-[12px] text-green-800">Tên KH: <span className="font-bold">{useDataFetch.memberName}</span></p>
-                                            <div className="flex flex-col useDataFetchs-start">
-                                                <p className="text-[12px] text-green-800">Số ĐT: <span className="font-bold">{useDataFetch.memberPhone}</span></p>
-                                                <p className="text-[12px] text-green-800">Số Dư: <span className="font-bold">{formatNumber(useDataFetch.memberPoint)} VNĐ</span></p>
-                                            </div>
-                                        </div>
-
-                                    </>
-                                ) : (<>
-                                    <p className="text-[12px] text-red-800">Mã không hợp lệ</p>
-                                </>)
-                            }
+                    {["memberId", "pointUse"].map((field, idx) => (
+                        <div key={idx} className="flex flex-col">
+                            <label className="block text-sm font-medium text-gray-600 mb-1">{field === "memberId" ? "Mã khách hàng" : "Số điểm sử dụng"}</label>
+                            <input type="text" name={field} value={usePointData[field]} onChange={handleChange} placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "số điểm sử dụng"}...`}
+                                className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition" />
                         </div>
-                    </div>
-
-                    {/* Mã hóa đơn */}
-                    <div className="flex flex-col">
-                        <label htmlFor="ma_hoa_don" className="block text-sm font-medium text-gray-600 mb-1">
-                            Số điểm sử dụng
-                        </label>
-                        <input
-                            type="text"
-                            name="pointUse"
-                            value={usePointData.pointUse}
-                            onChange={handleChange}
-                            id="ma_hoa_don"
-                            className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800  transition"
-                            placeholder="Nhập điểm sử dụng..."
-                        />
-                    </div>
-
-
-                    {/* Nút Gửi */}
+                    ))}
+                    {dataFetch && <p className="text-green-800 text-[12px] font-bold">KH: {dataFetch.memberName}, SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>}
                     <div className="flex justify-end gap-2">
-                        <button 
-                        onClick={ postUsePoint}
-                        className="w-full bg-gray-700 outline-none text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">
-                            Gửi
-                        </button>
-                        <button
-                            onClick={() => handleShow(null)}
-                            className="w-full bg-gray-700 outline-none text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">
-                            Hủy bỏ
-                        </button>
+                        <button onClick={handleToogle} className="w-full bg-gray-700 text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Gửi</button>
+                        <button onClick={() => handleShow(null)} className="w-full bg-gray-700 text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Hủy bỏ</button>
                     </div>
                 </div>
-            </div>
-        </>
-    )
-}
+                )
+            }
+        </div>
+    );
+};
 
-export default UsePoin
+export default UsePoin;

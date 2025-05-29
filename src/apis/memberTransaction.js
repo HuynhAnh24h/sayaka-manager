@@ -25,3 +25,15 @@ export const createTransaction = async (transactionData, userId) => {
         return { status: "Error", message: error.message };
     }
 };
+
+export const useMemberPoints = async (data, userId) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/transactions/use-point`, data, {
+            headers: { userId }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi sử dụng điểm:", error);
+        return { status: "Error", message: error.message };
+    }
+};

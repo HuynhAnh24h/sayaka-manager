@@ -21,7 +21,7 @@ const AddPoin = ({ handleShow }) => {
         getMemberInfo(addPointData.memberId, userId).then(data => setDataFetch(data));
     }, [addPointData.memberId]);
 
-    const handleSendAPI = async () => {
+    const handleSubmit = async () => {
         const response = await createTransaction(addPointData, userId);
         response.status !== "Success" ? toast.error(response.message) : (toast.success(response.message), handleShow(null));
     };
@@ -33,7 +33,8 @@ const AddPoin = ({ handleShow }) => {
             </button>
             <h1 className="text-2xl font-bold text-gray-700">{validateModal ? "Xác nhận giao dịch" : "Tích điểm"}</h1>
             {validateModal ? (
-                <ValidateSubmitModal dataAPI={dataFetch} dataSumit={addPointData} handleModal={handleToggleModal} handleSend={handleSendAPI} />
+                <ValidateSubmitModal orderValue={addPointData.orderValue} 
+                memberName={dataFetch.memberName} handleToggleModal={handleToggleModal} handleSubmit={handleSubmit} />
             ) : (
                 <div className="w-full space-y-4">
                     {["memberId", "orderId", "orderValue"].map((field, idx) => (
