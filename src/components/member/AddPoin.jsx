@@ -60,6 +60,7 @@ const AddPoin = ({ handleShow }) => {
             const post = await axios.post("https://member.sayaka.vn/api/transactions/create-transaction", addPointData, config)
             if (post.data.status != 'Success') {
                 toast.error(post.data.message);
+                handleShow(false)
             } else {
                 toast.success(post.data.message)
             }
