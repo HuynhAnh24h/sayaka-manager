@@ -12,12 +12,23 @@ const UsePoin = ({ handleShow, reloadData }) => {
     const [dataFetch, setDataFetch] = useState(null);
     const [usePointData, setUsePointData] = useState({ memberId: "", pointUse: "", cashierId: userId, restaurantId });
     const [toogle,setToogle] = useState(false)
-    const handleChange = ({ target: { name, value } }) => setUsePointData(prev => ({ ...prev, [name]: value }));
-
-    useEffect(() => {
-        if (!usePointData.memberId) return;
-        getMemberInfo(usePointData.memberId, userId).then(data => setDataFetch(data));
-    }, [usePointData.memberId]);
+    const handleChange = ({ target: { name, value } }) => {
+        setUsePointData(prev => ({ ...prev, [name]: value })) 
+        if (name === "memberId" && key === "Enter" && value.trim()) {
+            fetchMemberData(value);
+        }};
+     const fetchMemberData = async (memberId) => {
+        try {
+            const data = await getMemberInfo(memberId, userId);
+            setDataFetch(data);
+        } catch (error) {
+            console.error("Lỗi lấy dữ liệu khách hàng:", error);
+        }
+    }
+    // useEffect(() => {
+    //     if (!usePointData.memberId) return;
+    //     getMemberInfo(usePointData.memberId, userId).then(data => setDataFetch(data));
+    // }, [usePointData.memberId]);
 
     const handleToogle = () =>{setToogle((prev)=>!prev)}
 
@@ -38,19 +49,27 @@ const UsePoin = ({ handleShow, reloadData }) => {
                     {["memberId", "pointUse"].map((field, idx) => (
                         <div key={idx} className="flex flex-col">
                             <label className="block text-sm font-medium text-gray-600 mb-1">{field === "memberId" ? "Mã khách hàng" : "Số điểm sử dụng"}</label>
-                            <input type="text" name={field} value={usePointData[field]} onChange={handleChange} placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "số điểm sử dụng"}...`}
+                            <input type="text" name={field} 
+                            value={usePointData[field]} 
+                            onChange={handleChange} 
+                            placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "số điểm sử dụng"}...`}
+                            onKeyDown={field === "memberId" ? (e) => e.key === "Enter" && fetchMemberData(usePointData.memberId) : undefined}
                                 className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition" />
                             {
                                 field == "pointUse" ? (<span className="font-bold text-sm text-green-800 capitalize pt-1">{speakNumber(usePointData.pointUse)}</span>):("")
                             }
-                             {
-                                field == "memberId" && dataFetch ? (
-                                    <div className="flex flex-col justify-start pt-1">
-                                        <p className="text-green-800 text-[12px] font-bold">Khách hàng: {dataFetch.memberName}</p>
-                                        <p className="text-green-800 text-[12px] font-bold">SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>
-                                    </div>
-                                ):("")
-                            }
+                             {field === "memberId" && (
+                                <div className="flex flex-col justify-start pt-1">
+                                    {dataFetch ? (
+                                        <>
+                                            <p className="text-green-800 text-[12px] font-bold">Khách hàng: {dataFetch.memberName}</p>
+                                            <p className="text-green-800 text-[12px] font-bold">SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>
+                                        </>
+                                    ) : (
+                                        <p className="text-red-800 text-[12px] font-bold">Không tồn tại member</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                        
                     ))}
