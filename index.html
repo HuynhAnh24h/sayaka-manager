@@ -1,13 +1,64 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="shortcut icon" href="/src/assets/logo.png" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sayaka Management</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="/src/assets/logo.png" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sayaka Management</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+  <!-- <script>
+    function numberToWords(num) {
+      if (num === 0) return "không";
+
+      const ones = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
+      const teens = ["mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín"];
+      const tens = ["", "", "hai mươi", "ba mươi", "bốn mươi", "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"];
+      const thousands = ["", "nghìn", "triệu"];
+
+      function convertChunk(num) {
+        let result = "";
+        if (num >= 100) {
+          result += ones[Math.floor(num / 100)] + " trăm";
+          num %= 100;
+          if (num > 0) result += " ";
+        }
+        if (num >= 20) {
+          result += tens[Math.floor(num / 10)];
+          num %= 10;
+          if (num > 0) result += " ";
+        } else if (num >= 10) {
+          result += teens[num - 10];
+          num = 0;
+        }
+        if (num > 0) {
+          result += ones[num];
+        }
+        return result;
+      }
+
+      let parts = [];
+      let unitIndex = 0;
+
+      while (num > 0) {
+        let chunk = num % 1000;
+        if (chunk > 0) {
+          let chunkStr = convertChunk(chunk) + (thousands[unitIndex] ? " " + thousands[unitIndex] : "");
+          parts.unshift(chunkStr);
+        }
+        num = Math.floor(num / 1000);
+        unitIndex++;
+      }
+
+      return parts.join(" ").trim();
+    }
+
+    console.log(numberToWords(1234567))
+  </script> -->
+</body>
+
 </html>
