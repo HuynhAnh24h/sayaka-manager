@@ -7,10 +7,10 @@ const ValidateSubmitModal = ({orderValue, memberName, handleSubmit, handleToggle
              cho khách hàng <span className=" font-bold text-green-800">{memberName}</span>.</p>
         <div className="flex justify-between items-center py-3 gap-2">
             <button  onClick={handleSubmit}
-            className="w-full bg-gray-800 outline-none text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Xác nhận</button>
+            className="w-full bg-gray-700 outline-none text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Xác nhận</button>
             <button 
                 onClick={handleToggleModal}
-            className="w-full bg-red-800 outline-none text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Hủy</button>
+            className="w-full bg-red-700 outline-none text-white font-medium py-2 rounded-md hover:bg-red-800 transition">Hủy</button>
         </div>
     </div>
   )
