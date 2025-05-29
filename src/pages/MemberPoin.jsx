@@ -7,6 +7,7 @@ import { Loading } from "../components";
 import { getTransactions } from "../apis/memberTransaction";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import nodata from"../assets/user.jpg"
 
 const MemberPoin = () => {
     const userId = useSelector((state) => state.auth.userId);
@@ -98,6 +99,7 @@ const MemberPoin = () => {
                     } /> : (
                         <div className="flex flex-col ">
                             <div className="text-center py-10">
+                                <img src={nodata} className="w-full h-full" />
                                 <p className="text-gray-500">Không có dữ liệu thành viên.</p>
                             </div>
                             <div className="flex justify-center items-center gap-2 mt-4">
