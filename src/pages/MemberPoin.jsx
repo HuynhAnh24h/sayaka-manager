@@ -24,9 +24,9 @@ const MemberPoin = () => {
             })
             .finally(() => setLoading(false));
     }, [searchParams]);
-    const reloadData = () =>{
+    const reloadData = () => {
         setLoading(true);
-         getTransactions(searchParams, userId)
+        getTransactions(searchParams, userId)
             .then((response) => {
                 if (response) setData(response);
             })
@@ -96,14 +96,34 @@ const MemberPoin = () => {
                             </button>
                         </div>
                     } /> : (
-                        <div className="text-center py-10">
-                            <p className="text-gray-500">Không có dữ liệu thành viên.</p>
+                        <div className="flex flex-col ">
+                            <div className="text-center py-10">
+                                <p className="text-gray-500">Không có dữ liệu thành viên.</p>
+                            </div>
+                            <div className="flex justify-center items-center gap-2 mt-4">
+                                <button disabled={searchParams.page === 1} onClick={() => changePage(searchParams.page - 1)}
+                                    className={`px-1 py-1 rounded-sm ${searchParams.page === 1 ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}>
+                                    <MdKeyboardDoubleArrowLeft size={25} />
+                                </button>
+
+                                {[...Array(totalPages)].map((_, idx) => (
+                                    <button key={idx} onClick={() => changePage(idx + 1)}
+                                        className={`px-2 py-1 rounded-sm ${searchParams.page === idx + 1 ? "bg-gray-700 text-white" : "bg-gray-300 text-gray-700 hover:bg-gray-400"}`}>
+                                        {idx + 1}
+                                    </button>
+                                ))}
+
+                                <button disabled={searchParams.page === totalPages} onClick={() => changePage(searchParams.page + 1)}
+                                    className={`px-1 py-1 rounded-sm ${searchParams.page === totalPages ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}>
+                                    <MdKeyboardDoubleArrowRight size={25} />
+                                </button>
+                            </div>
                         </div>
                     )}
-                </div>
-            )}
-        </MainLayout>
-    );
+                        </div>
+                    )}
+                </MainLayout>
+            );
 };
 
-export default MemberPoin;
+            export default MemberPoin;
