@@ -145,7 +145,7 @@ const AddPoin = ({ handleShow }) => {
                                 </label>
                                 <input
                                     type="text"
-                                    value={formatNumber(Number(addPointData.orderValue))}
+                                    value={addPointData.orderValue}
                                     name="orderValue"
                                     id="gia_tri_hoa_don"
                                     onChange={handleChange}
