@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { formatNumber } from "../../helper/FormatData";
+import { formatNumber,speakNumber } from "../../helper/FormatData";
 import { getMemberInfo, useMemberPoints } from "../../apis/memberTransaction";
 import { toast } from "react-toastify";
 import ValidateSubmitModal from "../common/ValidateSubmitModal";
@@ -40,7 +40,11 @@ const UsePoin = ({ handleShow, reloadData }) => {
                             <label className="block text-sm font-medium text-gray-600 mb-1">{field === "memberId" ? "Mã khách hàng" : "Số điểm sử dụng"}</label>
                             <input type="text" name={field} value={usePointData[field]} onChange={handleChange} placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "số điểm sử dụng"}...`}
                                 className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition" />
+                            {
+                                field == "pointUse" ? (<span className="font-bold text-sm text-green-800 capitalize pt-1">{speakNumber(usePointData.pointUse)}</span>):("")
+                            }
                         </div>
+                       
                     ))}
                     {dataFetch && <p className="text-green-800 text-[12px] font-bold">KH: {dataFetch.memberName}, SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>}
                     <div className="flex justify-end gap-2">

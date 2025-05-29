@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { formatNumber } from "../../helper/FormatData";
+import { formatNumber,speakNumber } from "../../helper/FormatData";
 import { getMemberInfo, createTransaction } from "./../../apis/memberTransaction";
 import { toast } from "react-toastify";
 import ValidateSubmitModal from "../common/ValidateSubmitModal";
@@ -43,8 +43,12 @@ const AddPoin = ({ handleShow,reloadData }) => {
                             value={addPointData[field]} onChange={handleChange} 
                             placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : field === "orderId" ? "mã hóa đơn" : "giá trị hóa đơn"}...`}
                                 className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition" />
+                            {
+                                field == "orderValue" ? (<span className="font-bold text-sm text-green-800 capitalize pt-1">{speakNumber(addPointData.orderValue)}</span>):("")
+                            }
                         </div>
                     ))}
+                    
                     {dataFetch && <p className="text-green-800 text-[12px] font-bold">KH: {dataFetch.memberName}, SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>}
                     <div className="flex justify-end gap-2">
                         <button onClick={handleToggleModal} className="w-full bg-gray-700 text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Gửi</button>

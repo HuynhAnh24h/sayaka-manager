@@ -1,5 +1,4 @@
-import { formatNumber } from "../../helper/FormatData"
-
+import { formatNumber,speakNumber } from "../../helper/FormatData"
 const ValidateSubmitModal = ({orderValue, memberName, handleSubmit, handleToggleModal}) => {
   return (
     <div className="w-full h-full">
