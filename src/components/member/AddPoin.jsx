@@ -6,7 +6,7 @@ import { getMemberInfo, createTransaction } from "./../../apis/memberTransaction
 import { toast } from "react-toastify";
 import ValidateSubmitModal from "../common/ValidateSubmitModal";
 
-const AddPoin = ({ handleShow }) => {
+const AddPoin = ({ handleShow,reloadData }) => {
     const userId = useSelector((state) => state.auth.userId);
     const restaurantId = useSelector((state) => state.auth.restaurantId);
     const [addPointData, setAddPointData] = useState({ memberId: "", orderId: "", orderValue: "", cashierId: userId, restaurantId });
@@ -20,10 +20,9 @@ const AddPoin = ({ handleShow }) => {
         if (!addPointData.memberId) return;
         getMemberInfo(addPointData.memberId, userId).then(data => setDataFetch(data));
     }, [addPointData.memberId]);
-
     const handleSubmit = async () => {
         const response = await createTransaction(addPointData, userId);
-        response.status !== "Success" ? toast.error(response.message) : (toast.success(response.message), handleShow(null));
+        response.status !== "Success" ? toast.error(response.message) : (toast.success(response.message), handleShow(null), reloadData());
     };
 
     return (
