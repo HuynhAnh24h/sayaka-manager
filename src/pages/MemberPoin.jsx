@@ -12,20 +12,27 @@ const MemberPoin = () => {
     const [loading, setLoading] = useState(true);
     const modalRef = useRef(null);
     const [activeTab, setActiveTab] = useState(null);
-    const [searchParams, setSearchParams] = useState({ 
-        restaurantId: "", 
-        memberId: "", 
-        page: 1, 
-        pageSize: 100, 
-        transactionType: 0, 
-        memberPhone: "", 
+    const [searchParams, setSearchParams] = useState({
+        restaurantId: "",
+        memberId: "",
+        page: 1,
+        pageSize: 10,
+        transactionType: 0,
+        memberPhone: "",
     });
     useEffect(() => {
+        setLoading(true);
+        getTransactions(searchParams, userId)
+            .then(setData)
+            .finally(() => setLoading(false)); // Đảm bảo cập nhật trạng thái
+    }, [searchParams]);
+    const reloadData = () => {
         getTransactions(searchParams, userId).then(setData).finally(() => setLoading(false));
-    }, []);
-    const reloadData = () =>{
-         getTransactions(searchParams, userId).then(setData).finally(() => setLoading(false));
     }
+    const changePage = (newPage) => {
+        if (newPage < 1) return; // Không cho page < 1
+        setSearchParams((prev) => ({ ...prev, page: newPage }));
+    };
 
     useEffect(() => {
         if (!activeTab) return;
@@ -49,7 +56,7 @@ const MemberPoin = () => {
 
             {activeTab && (
                 <div ref={modalRef} className="fixed inset-0 bg-[rgba(0,0,0,0.1)] flex justify-center items-center">
-                    {activeTab === "addPoin" ? <AddPoin handleShow={setActiveTab} reloadData = {reloadData}/> : <UsePoin handleShow={setActiveTab} reloadData={reloadData}/>}
+                    {activeTab === "addPoin" ? <AddPoin handleShow={setActiveTab} reloadData={reloadData} /> : <UsePoin handleShow={setActiveTab} reloadData={reloadData} />}
                 </div>
             )}
 
@@ -72,7 +79,27 @@ const MemberPoin = () => {
             {loading ? <Loading /> : (
                 <div className="overflow-auto min-h-[calc(100vh-300px)]">
                     {data && data.length > 0 ? <ListMember data={data} /> : <div className="text-center py-10"><p className="text-gray-500">Không có dữ liệu thành viên.</p></div>}
-                </div>
+                    <div className="flex justify-end items-center">
+                       <div className="flex items-center gap-2">
+                             <button
+                            disabled={searchParams.page === 1}
+                            onClick={() => changePage(searchParams.page - 1)}
+                            className={`px-4 py-2 rounded-md ${searchParams.page === 1 ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}
+                        >
+                            Trang trước
+                        </button>
+
+                        <span className="text-gray-700">Trang {searchParams.page}</span>
+
+                        <button
+                            onClick={() => changePage(searchParams.page + 1)}
+                            className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800"
+                        >
+                            Trang sau
+                        </button>
+                       </div>
+                    </div>
+                </div>  
             )}
         </MainLayout>
     );

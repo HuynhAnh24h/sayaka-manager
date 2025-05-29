@@ -73,7 +73,7 @@ const Sidebar = () => {
            <div className="absolute bottom-5 left-3 right-3">
                     <button className="w-full bg-gray-500 rounded-md px-3 py-3 
                     transition-all font-bold
-                    hover:cursor-pointer hover:bg-blue-800 "
+                    hover:cursor-pointer hover:bg-red-800 "
                     onClick={() => dispatch(logout())}
                     >Đăng xuất</button>
             </div>
