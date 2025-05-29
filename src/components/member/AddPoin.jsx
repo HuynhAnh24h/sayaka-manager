@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { formatNumber, speakNumber } from "../../helper/FormatData";
@@ -12,12 +12,21 @@ const AddPoin = ({ handleShow, reloadData }) => {
     const [addPointData, setAddPointData] = useState({ memberId: "", orderId: "", orderValue: "", cashierId: userId, restaurantId });
     const [dataFetch, setDataFetch] = useState(null);
     const [validateModal, setValidateModal] = useState(false);
-    const inputRef = useRef(null);
+    const memberIdRef = useRef(null);
+    const orderIdRef = useRef(null);
+    const orderValueRef = useRef(null);
 
     const handleChange = ({ target: { name, value } }) => {
         setAddPointData(prev => ({ ...prev, [name]: value }))
-        if (name === "memberId" && key === "Enter" && value.trim()) {
-            fetchMemberData(value);
+    }
+    const handleKeyDown = async(e, field) => {
+        if (e.key === "Enter" && addPointData[field].trim()) {
+            if (field === "memberId") {
+                await fetchMemberData(addPointData.memberId);
+                orderIdRef.current.focus();
+            } else if (field === "orderId") {
+                orderValueRef.current.focus();
+            }
         }
     }
     const handleToggleModal = () => setValidateModal(prev => !prev);
@@ -29,11 +38,13 @@ const AddPoin = ({ handleShow, reloadData }) => {
             console.error("Lỗi lấy dữ liệu khách hàng:", error);
         }
     }
-       useEffect(() => {
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        }, [validateModal]);
+    useEffect(() => {
+        if (memberIdRef.current) {
+            memberIdRef.current.focus();
+        } else {
+            console.error("Lỗi: memberIdRef.current là null");
+        }
+    }, [validateModal]);
 
     const handleSubmit = async () => {
         const response = await createTransaction(addPointData, userId);
@@ -61,8 +72,8 @@ const AddPoin = ({ handleShow, reloadData }) => {
                                 name={field}
                                 value={addPointData[field]}
                                 onChange={handleChange}
-                                ref={field === "memberId" ? inputRef : undefined}
-                                onKeyDown={field === "memberId" ? (e) => e.key === "Enter" && fetchMemberData(addPointData.memberId) : undefined}
+                                onKeyDown={(e) => handleKeyDown(e, field)}
+                                ref={field === "memberId" ? memberIdRef : field === "orderId" ? orderIdRef : orderValueRef}
                                 placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : field === "orderId" ? "mã hóa đơn" : "giá trị hóa đơn"}...`}
                                 className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition"
                             />
