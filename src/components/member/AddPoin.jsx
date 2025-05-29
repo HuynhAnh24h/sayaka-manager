@@ -44,12 +44,18 @@ const AddPoin = ({ handleShow,reloadData }) => {
                             placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : field === "orderId" ? "mã hóa đơn" : "giá trị hóa đơn"}...`}
                                 className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition" />
                             {
-                                field == "orderValue" ? (<span className="font-bold text-sm text-green-800 capitalize pt-1">{speakNumber(addPointData.orderValue)}</span>):("")
+                                field == "orderValue" ? (<span className="text-green-800 text-[12px] font-bold capitalize pt-1">{speakNumber(addPointData.orderValue)}</span>):("")
+                            }
+                            {
+                                field == "memberId" && dataFetch ? (
+                                    <div className="flex flex-col justify-start pt-1">
+                                        <p className="text-green-800 text-[12px] font-bold">Khách hàng: {dataFetch.memberName}</p>
+                                        <p className="text-green-800 text-[12px] font-bold">SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>
+                                    </div>
+                                ):("")
                             }
                         </div>
                     ))}
-                    
-                    {dataFetch && <p className="text-green-800 text-[12px] font-bold">KH: {dataFetch.memberName}, SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>}
                     <div className="flex justify-end gap-2">
                         <button onClick={handleToggleModal} className="w-full bg-gray-700 text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Gửi</button>
                         <button onClick={() => handleShow(null)} className="w-full bg-red-700 text-white font-medium py-2 rounded-md hover:bg-red-800 transition">Hủy bỏ</button>
