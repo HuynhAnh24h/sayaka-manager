@@ -32,7 +32,7 @@ const Sidebar = () => {
                             </NavLink>
                         </li>
                         <li className="mb-2">
-                            <NavLink to="/member-poin" className={({ isActive }) => isActive ? "text-gray-white bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all" : "hover:text-gray-white hover:bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all"}>
+                            <NavLink to="/member-transactions" className={({ isActive }) => isActive ? "text-gray-white bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all" : "hover:text-gray-white hover:bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all"}>
                                 <MdOutlineRememberMe className="inline-block mr-2" />
                                 Tích điểm thành viên
                             </NavLink>

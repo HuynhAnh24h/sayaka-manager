@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import avatar from "../assets/avatar.webp"
+import user from "../assets/user.jpg"
 
 const Header = () => {
   const userName = useSelector((state) => state.auth.userFullName);
@@ -9,7 +9,7 @@ const Header = () => {
       <nav>
         <ul className="flex justify-center items-center space-x-4">
             <div className='w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center'>
-                <img src={avatar} alt="Đây là cái avatar của tui" className="rounded-full" />
+                <img src={user} alt="Đây là cái avatar của tui" className="rounded-full" />
             </div>
             {
               userName ? (

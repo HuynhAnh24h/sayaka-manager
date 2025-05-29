@@ -15,7 +15,7 @@ const App = () => {
               <Route path="/package-product" element={<PackageProduct />} />
               <Route path="/report" element={<Report />} />
               <Route path="/warehourse" element={<Warehourse />} />
-              <Route path="/member-poin" element={<MemberPoin />} />
+              <Route path="/member-transactions" element={<MemberPoin />} title={'Lịch sử giao dịch'}/>
             </Route>
           <Route path="*" element={<NotPound/>} />
         </Routes>
