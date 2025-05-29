@@ -41,8 +41,6 @@ const AddPoin = ({ handleShow, reloadData }) => {
     useEffect(() => {
         if (memberIdRef.current) {
             memberIdRef.current.focus();
-        } else {
-            console.error("Lỗi: memberIdRef.current là null");
         }
     }, [validateModal]);
 

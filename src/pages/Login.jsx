@@ -17,7 +17,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.post("https://member.sayaka.vn/api/auth/login", dataLogin);
-      if (response.data) {
+      if (response.data.data) {
         dispatch(login({
           userId: response.data.data.userId || "Không lấy được ID người dùng",
           restaurantId: response.data.data.restaurantId || "Không lấy được ID nhà hàng",

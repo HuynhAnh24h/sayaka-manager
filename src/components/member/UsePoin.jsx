@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { formatNumber, speakNumber } from "../../helper/FormatData";
@@ -12,11 +12,17 @@ const UsePoin = ({ handleShow, reloadData }) => {
     const [dataFetch, setDataFetch] = useState(null);
     const [usePointData, setUsePointData] = useState({ memberId: "", pointUse: "", cashierId: userId, restaurantId });
     const [toogle, setToogle] = useState(false)
-    const inputRef = useRef(null);
+    const memberIdRef = useRef(null);
+    const pointUseRef = useRef(null);
     const handleChange = ({ target: { name, value } }) => {
         setUsePointData(prev => ({ ...prev, [name]: value }))
-        if (name === "memberId" && key === "Enter" && value.trim()) {
-            fetchMemberData(value);
+    };
+    const handleKeyDown = async (e, field) => {
+        if (e.key === "Enter") {
+            if (field === "memberId") {
+                await fetchMemberData(usePointData.memberId);
+                pointUseRef.current.focus(); // Chuyển focus sau khi lấy dữ liệu
+            }
         }
     };
     const fetchMemberData = async (memberId) => {
@@ -28,8 +34,9 @@ const UsePoin = ({ handleShow, reloadData }) => {
         }
     }
     useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
+
+        if (memberIdRef.current) {
+            memberIdRef.current.focus();
         }
     }, [toogle]);
 
@@ -55,9 +62,9 @@ const UsePoin = ({ handleShow, reloadData }) => {
                                 <input type="text" name={field}
                                     value={usePointData[field]}
                                     onChange={handleChange}
-                                    ref={field === "memberId" ? inputRef : undefined}
+                                    onKeyDown={(e) => handleKeyDown(e, field)}
+                                    ref={field === "memberId" ? memberIdRef : pointUseRef}
                                     placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "số điểm sử dụng"}...`}
-                                    onKeyDown={field === "memberId" ? (e) => e.key === "Enter" && fetchMemberData(usePointData.memberId) : undefined}
                                     className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition" />
                                 {
                                     field == "pointUse" ? (<span className="font-bold text-sm text-green-800 capitalize pt-1">{speakNumber(usePointData.pointUse)}</span>) : ("")

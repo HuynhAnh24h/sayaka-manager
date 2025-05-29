@@ -9,13 +9,7 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
             <Route element={<PrivateRoute />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/product-delivery" element={<ProductDelivery />} />
-              <Route path="/product-manager" element={<ProductManager />} />
-              <Route path="/package-product" element={<PackageProduct />} />
-              <Route path="/report" element={<Report />} />
-              <Route path="/warehourse" element={<Warehourse />} />
-              <Route path="/member-transactions" element={<MemberPoin />} title={'Lịch sử giao dịch'}/>
+              <Route path="/" element={<MemberPoin />} title={'Lịch sử giao dịch'}/>
             </Route>
           <Route path="*" element={<NotPound/>} />
         </Routes>
