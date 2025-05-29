@@ -8,8 +8,6 @@ import { getTransactions } from "../apis/memberTransaction";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 
-
-
 const MemberPoin = () => {
     const userId = useSelector((state) => state.auth.userId);
     const [data, setData] = useState(null);
@@ -26,7 +24,14 @@ const MemberPoin = () => {
             })
             .finally(() => setLoading(false));
     }, [searchParams]);
-
+    const reloadData = () =>{
+        setLoading(true);
+         getTransactions(searchParams, userId)
+            .then((response) => {
+                if (response) setData(response);
+            })
+            .finally(() => setLoading(false));
+    }
     const totalPages = data ? data.totalPage : 1;
 
     const changePage = (newPage) => {
@@ -49,7 +54,7 @@ const MemberPoin = () => {
 
             {activeTab && (
                 <div ref={modalRef} className="fixed inset-0 bg-[rgba(0,0,0,0.1)] flex justify-center items-center">
-                    {activeTab === "addPoin" ? <AddPoin handleShow={setActiveTab} /> : <UsePoin handleShow={setActiveTab} />}
+                    {activeTab === "addPoin" ? <AddPoin handleShow={setActiveTab} reloadData={reloadData} /> : <UsePoin handleShow={setActiveTab} reloadData={reloadData} />}
                 </div>
             )}
 
@@ -71,7 +76,7 @@ const MemberPoin = () => {
 
             {loading ? <Loading /> : (
                 <div className="overflow-auto min-h-[calc(100vh-300px)]">
-                    {data && data.transactions?.length > 0 ? <ListMember data={data.transactions} totalPage={totalPages}  currentPage={searchParams.page} paginationControls={
+                    {data && data.transactions?.length > 0 ? <ListMember data={data.transactions} totalPage={totalPages} currentPage={searchParams.page} paginationControls={
                         <div className="flex justify-center items-center gap-2 mt-4">
                             <button disabled={searchParams.page === 1} onClick={() => changePage(searchParams.page - 1)}
                                 className={`px-1 py-1 rounded-sm ${searchParams.page === 1 ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}>
