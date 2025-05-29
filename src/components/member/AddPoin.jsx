@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { formatNumber, speakNumber } from "../../helper/FormatData";
@@ -12,6 +12,7 @@ const AddPoin = ({ handleShow, reloadData }) => {
     const [addPointData, setAddPointData] = useState({ memberId: "", orderId: "", orderValue: "", cashierId: userId, restaurantId });
     const [dataFetch, setDataFetch] = useState(null);
     const [validateModal, setValidateModal] = useState(false);
+    const inputRef = useRef(null);
 
     const handleChange = ({ target: { name, value } }) => {
         setAddPointData(prev => ({ ...prev, [name]: value }))
@@ -28,14 +29,11 @@ const AddPoin = ({ handleShow, reloadData }) => {
             console.error("Lỗi lấy dữ liệu khách hàng:", error);
         }
     }
-    // useEffect(() => {
-    //     if (!addPointData.memberId) return;
-    //      const timer = setTimeout(() => {
-    //         getMemberInfo(addPointData.memberId, userId).then(data => setDataFetch(data));
-    //     }, 500);
-
-    // return () => clearTimeout(timer); 
-    // }, [addPointData.memberId]);
+       useEffect(() => {
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
+        }, [validateModal]);
 
     const handleSubmit = async () => {
         const response = await createTransaction(addPointData, userId);
@@ -63,6 +61,7 @@ const AddPoin = ({ handleShow, reloadData }) => {
                                 name={field}
                                 value={addPointData[field]}
                                 onChange={handleChange}
+                                ref={field === "memberId" ? inputRef : undefined}
                                 onKeyDown={field === "memberId" ? (e) => e.key === "Enter" && fetchMemberData(addPointData.memberId) : undefined}
                                 placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : field === "orderId" ? "mã hóa đơn" : "giá trị hóa đơn"}...`}
                                 className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition"
