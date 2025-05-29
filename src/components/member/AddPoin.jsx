@@ -78,7 +78,7 @@ const AddPoin = ({ handleShow }) => {
                         <IoCloseCircle size={25} />
                     </button>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-700">Tích điểm</h1>
+                <h1 className="text-2xl font-bold text-gray-700">{validatModal ? "Xác nhận giao dịch":"Tích điểm"}</h1>
                 {
                     validatModal ? (<ValidateSubmitModal
                         dataAPI={dataFetch}
