@@ -46,7 +46,8 @@ export const getTransactions = async (postData, userId) => {
     try {
         const config = { headers: { userId } };
         const response = await axios.post(`${API_BASE_URL}/transactions/get-list-transactions`, postData, config);
-        const data = response.data.data.transactions
+        const data = response.data.data
+        console.log(response.data.data.totalPage)
         return data
     } catch (error) {
         console.error("Lỗi tải danh sách giao dịch:", error);

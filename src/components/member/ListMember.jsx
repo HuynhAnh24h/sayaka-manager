@@ -1,5 +1,5 @@
 import { formatDate, formatNumber,formatRestaurantName } from '../../helper/FormatData'
-const ListMmember = ({ data }) => {
+const ListMmember = ({ data,paginationControls,  currentPage, totalPage }) => {
     return (
         <>
             <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
@@ -19,7 +19,7 @@ const ListMmember = ({ data }) => {
                 <tbody>
                     {data && data.map((member, index) => (
                         <tr key={index} className="hover:bg-gray-100 border-b hover:cursor-pointer transition-colors">
-                            <td className="px-4 py-3 text-center">{index + 1}</td>
+                            <td className="px-4 py-3 text-center">{member.id}</td>
                             <td className="px-4 py-3">{formatDate(member.transactionDate)}</td>
                             <td className="px-4 py-3">{member.memberName}</td>
                             <td className="px-4 py-3">{member.memberPhone}</td>
@@ -36,8 +36,11 @@ const ListMmember = ({ data }) => {
                     ))}
                 </tbody>
             </table>
-            <div className="mt-4">
-                <p className="text-sm text-gray-600">Tổng số giao dịch: {data ? data.length : 0}</p>
+            <div className="mt-4 flex justify-between items-center">
+                <p className="text-sm text-gray-600 flex items-center gap-2 font-semibold">
+                    <span>Tổng số giao dịch: {data ? data.length : 0}</span> | <span>Trang { currentPage} / {totalPage}</span>
+                </p>
+                {paginationControls}
             </div>
         </>
     )
