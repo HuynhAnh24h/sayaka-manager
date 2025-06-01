@@ -1,4 +1,5 @@
 import axios from "axios";
+import { CgLayoutGrid } from "react-icons/cg";
 
 const API_BASE_URL = "https://member.sayaka.vn/api";
 
@@ -53,3 +54,19 @@ export const getTransactions = async (postData, userId) => {
         return null;
     }
 };
+
+// Lấy thông tin order
+export const getOrderInfo = async(inPutQr)=>{
+    try{
+        const response = await axios.get(`${API_BASE_URL}/parseOrder/${inPutQr}`)
+        if(response){
+            const data = response.data.data
+            return data
+        }else{
+            console.log("Can't Get API")
+        }
+    }catch(err){
+        console.log("Some one error", err.message)
+        return null
+    }
+}
