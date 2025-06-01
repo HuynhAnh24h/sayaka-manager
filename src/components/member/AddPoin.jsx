@@ -27,10 +27,10 @@ const AddPoin = ({ handleShow, reloadData }) => {
     const [dataOrderInfo, setDataOrderInfo] = useState(null);
 
     useEffect(() => {
-    if (memberIdRef.current) {
-        memberIdRef.current.focus();
-    }
-}, []);
+        if (memberIdRef.current) {
+            memberIdRef.current.focus();
+        }
+    }, []);
 
     useEffect(() => {
         if (dataOrderInfo) {
@@ -48,43 +48,77 @@ const AddPoin = ({ handleShow, reloadData }) => {
 
     const handleKeyDown = async (e, field) => {
         if (e.key === "Enter" && addPointData[field]?.trim()) {
-            if (field === "memberId") {
-                await fetchMemberData(addPointData.memberId);
+        if (field === "memberId") {
+            await fetchMemberData(addPointData.memberId);
+            if (!errors.memberId) {
                 orderIdRef.current?.focus();
-            } else if (field === "orderId") {
-                await fetchInfoOrder(addPointData.orderId);
+            } else {
+                memberIdRef.current?.select();
+            }
+        } else if (field === "orderId") {
+            await fetchInfoOrder(addPointData.orderId);
+            if (!errors.orderId) {
+                orderValueRef.current?.focus();
+            } else {
+                orderIdRef.current?.select();
             }
         }
+    }
     };
 
     const handleToggleModal = () => setValidateModal(prev => !prev);
 
     const fetchMemberData = async (memberId) => {
-       try {
-        const data = await getMemberInfo(memberId, userId);
-        if (!data) {
-            setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
-            return;
+        try {
+            const data = await getMemberInfo(memberId, userId);
+            if (!data) {
+                setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
+                setDataFetch(null);
+                setTimeout(() => {
+                    memberIdRef.current?.focus();
+                    memberIdRef.current?.select();
+                }, 0);
+                return;
+            }
+            setDataFetch(data);
+            setErrors(prev => ({ ...prev, memberId: "" }));
+
+            // Nếu hợp lệ, tự động chuyển xuống input orderId
+            setTimeout(() => {
+                orderIdRef.current?.focus();
+            }, 0);
+        } catch (error) {
+            setErrors(prev => ({ ...prev, memberId: "Lỗi lấy dữ liệu khách hàng!" }));
+            setDataFetch(null);
+            setTimeout(() => {
+                memberIdRef.current?.focus();
+                memberIdRef.current?.select();
+            }, 0);
         }
-        setDataFetch(data);
-        setErrors(prev => ({ ...prev, memberId: "" })); // Xóa lỗi nếu hợp lệ
-    } catch (error) {
-        setErrors(prev => ({ ...prev, memberId: "Lỗi lấy dữ liệu khách hàng!" }));
-    }
     };
 
     const fetchInfoOrder = async (orderId) => {
-       try {
-        const data = await getOrderInfo(orderId);
-        if (!data) {
-            setErrors(prev => ({ ...prev, orderId: "Mã hóa đơn không hợp lệ!" }));
-            return;
+        try {
+            const data = await getOrderInfo(orderId);
+            if (!data) {
+                setErrors(prev => ({ ...prev, orderId: "Mã hóa đơn không hợp lệ!" }));
+                setDataOrderInfo(null); // Xóa thông tin hóa đơn nếu không hợp lệ
+                setTimeout(() => {
+                    orderIdRef.current?.focus();
+                    orderIdRef.current?.select();
+                }, 0);
+                return;
+            }
+            setDataOrderInfo(data);
+            setErrors(prev => ({ ...prev, orderId: "" }));
+        } catch (error) {
+            setErrors(prev => ({ ...prev, orderId: "Lỗi lấy thông tin đơn hàng!" }));
+            setDataOrderInfo(null);
+            setTimeout(() => {
+                orderIdRef.current?.focus();
+                orderIdRef.current?.select();
+            }, 0);
         }
-        setDataOrderInfo(data);
-        setErrors(prev => ({ ...prev, orderId: "" })); // Xóa lỗi nếu hợp lệ
-    } catch (error) {
-        setErrors(prev => ({ ...prev, orderId: "Lỗi lấy thông tin đơn hàng!" }));
-    }
     };
 
     const handleSubmit = async () => {
@@ -133,32 +167,34 @@ const AddPoin = ({ handleShow, reloadData }) => {
                                 name={field}
                                 value={addPointData[field]}
                                 onChange={handleChange}
-                                disabled={field ==="orderId" ? (addPointData.memberId ? false:true):false}
+                                disabled={field === "orderId" ? (!addPointData.memberId || errors.memberId) : false} // Khóa orderId nếu memberId sai
                                 onKeyDown={(e) => handleKeyDown(e, field)}
                                 ref={field === "memberId" ? memberIdRef : field === "orderId" ? orderIdRef : orderValueRef}
                                 placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "mã hóa đơn"}...`}
                                 className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition"
                             />
-                            {errors.memberId && <p className="text-red-800 text-[12px] font-bold">{errors.memberId}</p>}
-                            {field === "memberId" && dataFetch && (
+                            {errors[field] && <p className="text-red-800 text-[12px] font-bold">{errors[field]}</p>}
+                            {/* Hiển thị lỗi chính xác cho từng input */}
+
+                            {field === "memberId" && dataFetch && !errors.memberId && (
                                 <>
-                                {errors.orderId && <p className="text-red-800 text-[12px] font-bold">{errors.orderId}</p>}
                                     <p className="text-green-800 text-[12px] font-bold">
-                                    Khách hàng: {dataFetch?.memberName} 
-                                </p>
-                                <p className="text-green-800 text-[12px] font-bold">
-                                   SĐT: {dataFetch?.memberPhone} | Số dư: {formatNumber(dataFetch?.memberPoint)} VNĐ
-                                </p>
+                                        Khách hàng: {dataFetch?.memberName}
+                                    </p>
+                                    <p className="text-green-800 text-[12px] font-bold">
+                                        SĐT: {dataFetch?.memberPhone} | Số dư: {formatNumber(dataFetch?.memberPoint)} VNĐ
+                                    </p>
                                 </>
                             )}
-                            {field === "orderId" && dataOrderInfo && (
+
+                            {field === "orderId" && dataOrderInfo && !errors.orderId && (
                                 <div>
                                     <p className="block text-sm font-medium text-gray-600 mb-1 mt-2">Mã hóa đơn</p>
                                     <input type="text" placeholder={dataOrderInfo?.orderId} disabled={true}
                                         className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition"
                                     />
                                     <p className="block text-sm font-medium text-gray-600 mb-1 mt-2">Giá trị hóa đơn</p>
-                                    <input type="text" placeholder={formatNumber(dataOrderInfo?.orderValue)+" VNĐ"} disabled={true}
+                                    <input type="text" placeholder={formatNumber(dataOrderInfo?.orderValue) + " VNĐ"} disabled={true}
                                         className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition"
                                     />
                                     <span className="text-green-800 text-[12px] font-bold uppercase">{speakNumber(dataOrderInfo?.orderValue)}</span>
@@ -166,10 +202,12 @@ const AddPoin = ({ handleShow, reloadData }) => {
                             )}
                         </div>
                     ))}
+
+
                     <div className="flex justify-end gap-2">
                         <button onClick={handleToggleModal} className="w-full bg-gray-700 text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Gửi</button>
                         <button onClick={() => handleShow(null)} className="w-full bg-red-700 text-white font-medium py-2 rounded-md hover:bg-red-800 transition">Hủy bỏ</button>
-                  </div>
+                    </div>
                 </div>
             )}
         </div>
