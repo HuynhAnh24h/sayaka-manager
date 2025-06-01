@@ -9,7 +9,7 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
             <Route element={<PrivateRoute />}>
-              <Route path="/" element={<MemberPoin />} title={'Lịch sử giao dịch'}/>
+              <Route path="/member-poin" element={<MemberPoin />} title={'Lịch sử giao dịch'}/>
             </Route>
           <Route path="*" element={<NotPound/>} />
         </Routes>
