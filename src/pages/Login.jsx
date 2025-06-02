@@ -25,7 +25,7 @@ const Login = () => {
           userFullName: response.data.data.userFullName || "Không lấy được tên người dùng"
         }));
 
-        window.location.href = "/member-poin"
+        window.location.href = "/"
       } else {
         toast.error("Đăng nhập thất bại! Vui lòng thử lại.");
       }
