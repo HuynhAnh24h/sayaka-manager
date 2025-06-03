@@ -47,56 +47,45 @@ const AddPoin = ({ handleShow, reloadData }) => {
     };
 
     const handleKeyDown = async (e, field) => {
-        if (e.key === "Enter" && addPointData[field]?.trim()) {
-            if (field === "memberId") {
-                await fetchMemberData(addPointData.memberId);
-                if (!errors.memberId) {
-                    orderIdRef.current?.focus();
-                } else {
-                    memberIdRef.current?.select();
-                }
-            } else if (field === "orderId") {
-                await fetchInfoOrder(addPointData.orderId);
-                if (!errors.orderId) {
-                    orderValueRef.current?.focus();
-                } else {
-                    orderIdRef.current?.select();
-
-                }
+         if (e.key === "Enter" && addPointData[field]?.trim()) {
+        if (field === "memberId") {
+            await fetchMemberData(addPointData.memberId);
+            if (errors.memberId) {
+                memberIdRef.current?.select();
+            } else {
+                orderIdRef.current?.focus();
+            }
+        } else if (field === "orderId") {
+            await fetchInfoOrder(addPointData.orderId);
+            if (errors.orderId) {
+                orderIdRef.current?.select();
+            } else {
+                orderValueRef.current?.focus();
             }
         }
+    }
     };
 
     const handleToggleModal = () => setValidateModal(prev => !prev);
 
     const fetchMemberData = async (memberId) => {
-        try {
-            const data = await getMemberInfo(memberId, userId);
-            if (!data) {
-                setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
-                setDataFetch(null);
-                setTimeout(() => {
-                    memberIdRef.current?.focus();
-                    memberIdRef.current?.select();
-                }, 0);
-                return;
-            }
-            setDataFetch(data);
-            setErrors(prev => ({ ...prev, memberId: "" }));
+    try {
+        const data = await getMemberInfo(memberId, userId);
+        if (!data) throw new Error("Mã khách hàng không hợp lệ!");
 
-            // Nếu hợp lệ, tự động chuyển xuống input orderId
-            setTimeout(() => {
-                orderIdRef.current?.focus();
-            }, 0);
-        } catch (error) {
-            setErrors(prev => ({ ...prev, memberId: "Lỗi lấy dữ liệu khách hàng!" }));
-            setDataFetch(null);
-            setTimeout(() => {
-                memberIdRef.current?.focus();
-                memberIdRef.current?.select();
-            }, 0);
-        }
-    };
+        setDataFetch(data);
+        setErrors(prev => ({ ...prev, memberId: "" }));
+
+        // Nếu hợp lệ, tự động chuyển xuống input orderId
+        setTimeout(() => orderIdRef.current?.focus(), 0);
+    } catch {
+        setDataFetch(null);
+        setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
+        
+        // Nếu nhập sai, giữ lại ô nhập và yêu cầu nhập lại
+        setTimeout(() => memberIdRef.current?.select(), 0);
+    }
+};
 
     const fetchInfoOrder = async (orderId) => {
         try {
@@ -174,7 +163,8 @@ const AddPoin = ({ handleShow, reloadData }) => {
                                 onKeyDown={(e) => handleKeyDown(e, field)}
                                 ref={field === "memberId" ? memberIdRef : field === "orderId" ? orderIdRef : orderValueRef}
                                 placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "mã hóa đơn"}...`}
-                                className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition"
+                                className={`w-full px-4 py-2 outline-none border rounded-md focus:ring-2 transition ${errors[field] ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-gray-800"
+                                        }`}
                             />
                             {errors[field] && <p className="text-red-800 text-[12px] font-bold">{errors[field]}</p>}
                             {/* Hiển thị lỗi chính xác cho từng input */}

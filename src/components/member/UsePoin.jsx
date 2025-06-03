@@ -14,27 +14,36 @@ const UsePoin = ({ handleShow, reloadData }) => {
     const [toogle, setToogle] = useState(false)
     const memberIdRef = useRef(null);
     const pointUseRef = useRef(null);
+    const [errors, setErrors] = useState({ memberId: "" });
     const handleChange = ({ target: { name, value } }) => {
         setUsePointData(prev => ({ ...prev, [name]: value }))
     };
     const handleKeyDown = async (e, field) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && usePointData[field]?.trim()) {
             if (field === "memberId") {
                 await fetchMemberData(usePointData.memberId);
-                pointUseRef.current.focus(); // Chuyển focus sau khi lấy dữ liệu
+                errors.memberId ? memberIdRef.current?.select() : pointUseRef.current?.focus();
             }
         }
     };
     const fetchMemberData = async (memberId) => {
+
         try {
-            const data = await getMemberInfo(memberId, userId);
-            setDataFetch(data);
-        } catch (error) {
-            console.error("Lỗi lấy dữ liệu khách hàng:", error);
-        }
+        const data = await getMemberInfo(memberId, userId);
+        if (!data) throw new Error("Mã khách hàng không hợp lệ!");
+
+        setDataFetch(data);
+        setErrors(prev => ({ ...prev, memberId: "" }));
+        
+        // Nếu hợp lệ, tự động chuyển đến ô tiếp theo
+        setTimeout(() => pointUseRef.current?.focus(), 0);
+    } catch {
+        setDataFetch(null);
+        setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
+        setTimeout(() => memberIdRef.current?.select(), 0);
+    }
     }
     useEffect(() => {
-
         if (memberIdRef.current) {
             memberIdRef.current.focus();
         }
@@ -58,34 +67,47 @@ const UsePoin = ({ handleShow, reloadData }) => {
                     <div className="w-full space-y-4">
                         {["memberId", "pointUse"].map((field, idx) => (
                             <div key={idx} className="flex flex-col">
-                                <label className="block text-sm font-medium text-gray-600 mb-1">{field === "memberId" ? "Mã khách hàng" : "Số điểm sử dụng"}</label>
-                                <input type="text" name={field}
+                                <label className="block text-sm font-medium text-gray-600 mb-1">
+                                    {field === "memberId" ? "Mã khách hàng" : "Số điểm sử dụng"}
+                                </label>
+                                <input
+                                    type="text"
+                                    name={field}
                                     value={usePointData[field]}
                                     onChange={handleChange}
                                     onKeyDown={(e) => handleKeyDown(e, field)}
                                     ref={field === "memberId" ? memberIdRef : pointUseRef}
                                     placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "số điểm sử dụng"}...`}
-                                    className="w-full px-4 py-2 outline-none border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-800 transition" />
-                                {
-                                    field == "pointUse" ? (<span className="font-bold text-sm text-green-800 capitalize pt-1">{speakNumber(usePointData.pointUse)}</span>) : ("")
-                                }
-                                {field === "memberId" && (
+                                    className={`w-full px-4 py-2 outline-none border rounded-md focus:ring-2 transition ${errors[field] ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-gray-800"
+                                        }`}
+                                />
+                                {errors[field] && <span className="text-red-600 text-sm pt-1">{errors[field]}</span>}
+
+                                {/* Hiển thị thông tin khách hàng khi dữ liệu hợp lệ */}
+                                {field === "memberId" && !errors.memberId && dataFetch && (
                                     <div className="flex flex-col justify-start pt-1">
-                                        {dataFetch ? (
-                                            <>
-                                                <p className="text-green-800 text-[12px] font-bold">Khách hàng: {dataFetch.memberName}</p>
-                                                <p className="text-green-800 text-[12px] font-bold">SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>
-                                            </>
-                                        ) : (
-                                            <p className="text-red-800 text-[12px] font-bold">Không tồn tại member</p>
-                                        )}
+                                        <p className="text-green-800 text-[12px] font-bold">Khách hàng: {dataFetch.memberName}</p>
+                                        <p className="text-green-800 text-[12px] font-bold">SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>
                                     </div>
                                 )}
-                            </div>
 
+                                {/* Hiển thị số điểm đọc bằng chữ nếu là pointUse */}
+                                {field === "pointUse" && usePointData.pointUse && (
+                                    <span className="font-bold text-sm text-green-800 capitalize pt-1">
+                                        {speakNumber(usePointData.pointUse)}
+                                    </span>
+                                )}
+                            </div>
                         ))}
                         <div className="flex justify-end gap-2">
-                            <button onClick={handleToogle} className="w-full bg-gray-700 text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Gửi</button>
+                            <button
+                                onClick={handleToogle}
+                                className={`w-full text-white font-medium py-2 rounded-md transition ${usePointData.memberId && usePointData.pointUse && !errors.memberId ? "bg-gray-700 hover:bg-gray-800" : "bg-gray-400 cursor-not-allowed"
+                                    }`}
+                                disabled={!usePointData.memberId || !usePointData.pointUse || errors.memberId}
+                            >
+                                Gửi
+                            </button>
                             <button onClick={() => handleShow(null)} className="w-full bg-red-700 text-white font-medium py-2 rounded-md hover:bg-red-800 transition">Hủy bỏ</button>
                         </div>
                     </div>
@@ -95,4 +117,4 @@ const UsePoin = ({ handleShow, reloadData }) => {
     );
 };
 
-export default UsePoin;
+export default UsePoin
