@@ -47,69 +47,50 @@ const AddPoin = ({ handleShow, reloadData }) => {
     };
 
     const handleKeyDown = async (e, field) => {
-         if (e.key === "Enter" && addPointData[field]?.trim()) {
-        if (field === "memberId") {
-            await fetchMemberData(addPointData.memberId);
-            if (errors.memberId) {
-                memberIdRef.current?.select();
-            } else {
-                orderIdRef.current?.focus();
-            }
-        } else if (field === "orderId") {
-            await fetchInfoOrder(addPointData.orderId);
-            if (errors.orderId) {
-                orderIdRef.current?.select();
-            } else {
-                orderValueRef.current?.focus();
+        if (e.key === "Enter" && addPointData[field]?.trim()) {
+            if (field === "memberId") {
+                const isValid = await fetchMemberData(addPointData.memberId);
+                isValid ? orderIdRef.current?.focus() : memberIdRef.current?.select();
+            } else if (field === "orderId") {
+                const isValid = await fetchInfoOrder(addPointData.orderId);
+                isValid ? orderValueRef.current?.focus() : orderIdRef.current?.select();
             }
         }
-    }
     };
 
     const handleToggleModal = () => setValidateModal(prev => !prev);
 
     const fetchMemberData = async (memberId) => {
-    try {
-        const data = await getMemberInfo(memberId, userId);
-        if (!data) throw new Error("Mã khách hàng không hợp lệ!");
+        try {
+            const data = await getMemberInfo(memberId, userId);
+            if (!data) throw new Error("Mã khách hàng không hợp lệ!");
 
-        setDataFetch(data);
-        setErrors(prev => ({ ...prev, memberId: "" }));
+            setDataFetch(data);
+            setErrors(prev => ({ ...prev, memberId: "" }));
 
-        // Nếu hợp lệ, tự động chuyển xuống input orderId
-        setTimeout(() => orderIdRef.current?.focus(), 0);
-    } catch {
-        setDataFetch(null);
-        setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
-        
-        // Nếu nhập sai, giữ lại ô nhập và yêu cầu nhập lại
-        setTimeout(() => memberIdRef.current?.select(), 0);
-    }
-};
+            return true; // Trả về trạng thái hợp lệ
+        } catch {
+            setDataFetch(null);
+            setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
+
+            return false; // Trả về trạng thái không hợp lệ
+        }
+    };
 
     const fetchInfoOrder = async (orderId) => {
         try {
             const data = await getOrderInfo(orderId);
-            if (!data) {
-                setErrors(prev => ({ ...prev, orderId: "Mã hóa đơn không hợp lệ!" }));
-                setDataOrderInfo(null); // Xóa thông tin hóa đơn nếu không hợp lệ
-                setTimeout(() => {
-                    orderIdRef.current?.focus();
-                    orderIdRef.current?.select();
-                }, 0);
-                return;
-            } else {
-                setDataOrderInfo(data);
-                setErrors(prev => ({ ...prev, orderId: "" }));
-            }
+            if (!data) throw new Error("Mã hóa đơn không hợp lệ!");
 
-        } catch (error) {
-            setErrors(prev => ({ ...prev, orderId: "Lỗi lấy thông tin đơn hàng!" }));
+            setDataOrderInfo(data);
+            setErrors(prev => ({ ...prev, orderId: "" }));
+
+            return true; // Trả về trạng thái hợp lệ
+        } catch {
             setDataOrderInfo(null);
-            setTimeout(() => {
-                orderIdRef.current?.focus();
-                orderIdRef.current?.select();
-            }, 0);
+            setErrors(prev => ({ ...prev, orderId: "Mã hóa đơn không hợp lệ!" }));
+
+            return false; // Trả về trạng thái không hợp lệ
         }
     };
 
@@ -164,7 +145,7 @@ const AddPoin = ({ handleShow, reloadData }) => {
                                 ref={field === "memberId" ? memberIdRef : field === "orderId" ? orderIdRef : orderValueRef}
                                 placeholder={`Nhập ${field === "memberId" ? "mã khách hàng" : "mã hóa đơn"}...`}
                                 className={`w-full px-4 py-2 outline-none border rounded-md focus:ring-2 transition ${errors[field] ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-gray-800"
-                                        }`}
+                                    }`}
                             />
                             {errors[field] && <p className="text-red-800 text-[12px] font-bold">{errors[field]}</p>}
                             {/* Hiển thị lỗi chính xác cho từng input */}
@@ -202,8 +183,8 @@ const AddPoin = ({ handleShow, reloadData }) => {
                             onClick={handleToggleModal}
                             disabled={!dataFetch || !dataOrderInfo} // Khóa nếu không có dữ liệu trả về từ API
                             className={`w-full font-medium py-2 rounded-md transition ${!dataFetch || !dataOrderInfo
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-gray-700 text-white hover:bg-gray-800"
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-gray-700 text-white hover:bg-gray-800"
                                 }`}
                         >
                             Gửi

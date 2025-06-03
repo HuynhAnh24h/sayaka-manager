@@ -16,8 +16,19 @@ const UsePoin = ({ handleShow, reloadData }) => {
     const pointUseRef = useRef(null);
     const [errors, setErrors] = useState({ memberId: "" });
     const handleChange = ({ target: { name, value } }) => {
-        setUsePointData(prev => ({ ...prev, [name]: value }))
+        setUsePointData(prev => ({ ...prev, [name]: value }));
+
+        if (name === "pointUse" && dataFetch) {
+            const pointUse = Number(value);
+            const memberPoint = dataFetch.memberPoint;
+
+            const errorMessage = pointUse > memberPoint ? "Điểm của bạn không đủ!" : "";
+            if (errors.pointUse !== errorMessage) {
+                setErrors(prev => ({ ...prev, pointUse: errorMessage }));
+            }
+        }
     };
+
     const handleKeyDown = async (e, field) => {
         if (e.key === "Enter" && usePointData[field]?.trim()) {
             if (field === "memberId") {
@@ -29,19 +40,19 @@ const UsePoin = ({ handleShow, reloadData }) => {
     const fetchMemberData = async (memberId) => {
 
         try {
-        const data = await getMemberInfo(memberId, userId);
-        if (!data) throw new Error("Mã khách hàng không hợp lệ!");
+            const data = await getMemberInfo(memberId, userId);
+            if (!data) throw new Error("Mã khách hàng không hợp lệ!");
+            console.log(data)
+            setDataFetch(data);
+            setErrors(prev => ({ ...prev, memberId: "" }));
 
-        setDataFetch(data);
-        setErrors(prev => ({ ...prev, memberId: "" }));
-        
-        // Nếu hợp lệ, tự động chuyển đến ô tiếp theo
-        setTimeout(() => pointUseRef.current?.focus(), 0);
-    } catch {
-        setDataFetch(null);
-        setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
-        setTimeout(() => memberIdRef.current?.select(), 0);
-    }
+            // Nếu hợp lệ, tự động chuyển đến ô tiếp theo
+            setTimeout(() => pointUseRef.current?.focus(), 0);
+        } catch {
+            setDataFetch(null);
+            setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
+            setTimeout(() => memberIdRef.current?.select(), 0);
+        }
     }
     useEffect(() => {
         if (memberIdRef.current) {
@@ -52,9 +63,27 @@ const UsePoin = ({ handleShow, reloadData }) => {
     const handleToogle = () => { setToogle((prev) => !prev) }
 
     const handleSubmit = async () => {
-        const response = await useMemberPoints(usePointData, userId);
-        response.status !== "Success" ? toast.error(response.message) : (toast.success(response.message), handleShow(null), reloadData());
-    };
+        if (dataFetch && Number(usePointData.pointUse) > dataFetch.memberPoint) {
+            setErrors(prev => ({ ...prev, pointUse: "Điểm của bạn không đủ!" }));
+            return; // Ngăn gửi yêu cầu nếu điểm không đủ
+        }
+
+        try {
+            const response = await useMemberPoints(usePointData, userId);
+
+            if (response.status !== "Success") {
+                setErrors(prev => ({ ...prev, pointUse: response.message }));
+                toast.error(response.message);
+            } else {
+                toast.success(response.message);
+                handleShow(null);
+                reloadData();
+            }
+        } catch {
+            setErrors(prev => ({ ...prev, pointUse: "Có lỗi xảy ra khi gửi giao dịch!" }));
+            toast.error("Có lỗi xảy ra khi gửi giao dịch.");
+        }
+    }
 
     return (
         <div className="flex flex-col justify-center items-center gap-4 w-[400px] p-5 bg-white rounded-lg shadow-lg border border-gray-300 relative pointer-events-auto z-100">
@@ -81,30 +110,47 @@ const UsePoin = ({ handleShow, reloadData }) => {
                                     className={`w-full px-4 py-2 outline-none border rounded-md focus:ring-2 transition ${errors[field] ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-gray-800"
                                         }`}
                                 />
-                                {errors[field] && <span className="text-red-600 text-sm pt-1">{errors[field]}</span>}
-
-                                {/* Hiển thị thông tin khách hàng khi dữ liệu hợp lệ */}
-                                {field === "memberId" && !errors.memberId && dataFetch && (
-                                    <div className="flex flex-col justify-start pt-1">
-                                        <p className="text-green-800 text-[12px] font-bold">Khách hàng: {dataFetch.memberName}</p>
-                                        <p className="text-green-800 text-[12px] font-bold">SĐT: {dataFetch.memberPhone}, Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ</p>
+                                {field === "memberId" && (
+                                    <div className="flex flex-col pt-1">
+                                        {errors.memberId ? (
+                                            <span className="text-red-600 text-sm">{errors.memberId}</span>
+                                        ) : (
+                                            dataFetch && (
+                                                <>
+                                                    <p className="text-green-800 text-[12px] font-bold">Khách hàng: {dataFetch.memberName}</p>
+                                                    <p className="text-green-800 text-[12px] font-bold">
+                                                        SĐT: {dataFetch.memberPhone} | Số dư: {formatNumber(dataFetch.memberPoint)} VNĐ
+                                                    </p>
+                                                </>
+                                            )
+                                        )}
                                     </div>
                                 )}
 
-                                {/* Hiển thị số điểm đọc bằng chữ nếu là pointUse */}
-                                {field === "pointUse" && usePointData.pointUse && (
-                                    <span className="font-bold text-sm text-green-800 capitalize pt-1">
-                                        {speakNumber(usePointData.pointUse)}
-                                    </span>
+                                {/* Hiển thị lỗi và số điểm đọc bằng chữ nếu là pointUse */}
+                                {field === "pointUse" && (
+                                    <div className="flex flex-col">
+                                        {errors.pointUse ? (
+                                            <span className="text-red-600 text-sm pt-1">{errors.pointUse}</span>
+                                        ) : (
+                                            usePointData.pointUse && (
+                                                <span className="font-bold text-sm text-green-800 capitalize pt-1">
+                                                    {speakNumber(usePointData.pointUse)}
+                                                </span>
+                                            )
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         ))}
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={handleToogle}
-                                className={`w-full text-white font-medium py-2 rounded-md transition ${usePointData.memberId && usePointData.pointUse && !errors.memberId ? "bg-gray-700 hover:bg-gray-800" : "bg-gray-400 cursor-not-allowed"
+                                className={`w-full text-white font-medium py-2 rounded-md transition ${usePointData.memberId && usePointData.pointUse && !errors.memberId && !errors.pointUse
+                                    ? "bg-gray-700 hover:bg-gray-800"
+                                    : "bg-gray-400 cursor-not-allowed"
                                     }`}
-                                disabled={!usePointData.memberId || !usePointData.pointUse || errors.memberId}
+                                disabled={!usePointData.memberId || !usePointData.pointUse || errors.memberId || errors.pointUse}
                             >
                                 Gửi
                             </button>
