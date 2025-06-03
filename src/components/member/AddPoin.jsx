@@ -48,22 +48,23 @@ const AddPoin = ({ handleShow, reloadData }) => {
 
     const handleKeyDown = async (e, field) => {
         if (e.key === "Enter" && addPointData[field]?.trim()) {
-        if (field === "memberId") {
-            await fetchMemberData(addPointData.memberId);
-            if (!errors.memberId) {
-                orderIdRef.current?.focus();
-            } else {
-                memberIdRef.current?.select();
-            }
-        } else if (field === "orderId") {
-            await fetchInfoOrder(addPointData.orderId);
-            if (!errors.orderId) {
-                orderValueRef.current?.focus();
-            } else {
-                orderIdRef.current?.select();
+            if (field === "memberId") {
+                await fetchMemberData(addPointData.memberId);
+                if (!errors.memberId) {
+                    orderIdRef.current?.focus();
+                } else {
+                    memberIdRef.current?.select();
+                }
+            } else if (field === "orderId") {
+                await fetchInfoOrder(addPointData.orderId);
+                if (!errors.orderId) {
+                    orderValueRef.current?.focus();
+                } else {
+                    orderIdRef.current?.select();
+
+                }
             }
         }
-    }
     };
 
     const handleToggleModal = () => setValidateModal(prev => !prev);
@@ -108,9 +109,11 @@ const AddPoin = ({ handleShow, reloadData }) => {
                     orderIdRef.current?.select();
                 }, 0);
                 return;
+            } else {
+                setDataOrderInfo(data);
+                setErrors(prev => ({ ...prev, orderId: "" }));
             }
-            setDataOrderInfo(data);
-            setErrors(prev => ({ ...prev, orderId: "" }));
+
         } catch (error) {
             setErrors(prev => ({ ...prev, orderId: "Lỗi lấy thông tin đơn hàng!" }));
             setDataOrderInfo(null);
@@ -205,7 +208,16 @@ const AddPoin = ({ handleShow, reloadData }) => {
 
 
                     <div className="flex justify-end gap-2">
-                        <button onClick={handleToggleModal} className="w-full bg-gray-700 text-white font-medium py-2 rounded-md hover:bg-gray-800 transition">Gửi</button>
+                        <button
+                            onClick={handleToggleModal}
+                            disabled={!dataFetch || !dataOrderInfo} // Khóa nếu không có dữ liệu trả về từ API
+                            className={`w-full font-medium py-2 rounded-md transition ${!dataFetch || !dataOrderInfo
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-gray-700 text-white hover:bg-gray-800"
+                                }`}
+                        >
+                            Gửi
+                        </button>
                         <button onClick={() => handleShow(null)} className="w-full bg-red-700 text-white font-medium py-2 rounded-md hover:bg-red-800 transition">Hủy bỏ</button>
                     </div>
                 </div>
