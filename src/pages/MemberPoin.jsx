@@ -25,13 +25,11 @@ const MemberPoin = () => {
         memberName: ""
     });
     // Get All list
-    console.log(searchParams)
     useEffect(() => {
         setLoading(true);
         getTransactions(searchParams, userId)
             .then((response) => {
                 if (response) {
-                    console.log(response)
                     setData(response)
                 };
             })

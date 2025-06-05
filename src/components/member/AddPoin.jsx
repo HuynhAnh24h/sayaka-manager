@@ -60,22 +60,18 @@ const AddPoin = ({ handleShow, reloadData }) => {
 
     const handleToggleModal = () => setValidateModal(prev => !prev);
 
-    const fetchMemberData = async (memberId) => {
-        try {
-            const data = await getMemberInfo(memberId, userId);
-            if (!data) throw new Error("Mã khách hàng không hợp lệ!");
+   const fetchMemberData = async (memberId) => {
+    const response = await getMemberInfo(memberId, userId);
 
-            setDataFetch(data);
-            setErrors(prev => ({ ...prev, memberId: "" }));
+    if (!response.success) {
+        setErrors(prev => ({ ...prev, memberId: response.errors }));
+        return false;
+    }
 
-            return true; // Trả về trạng thái hợp lệ
-        } catch {
-            setDataFetch(null);
-            setErrors(prev => ({ ...prev, memberId: "Mã khách hàng không hợp lệ!" }));
-
-            return false; // Trả về trạng thái không hợp lệ
-        }
-    };
+    setDataFetch(response.data);
+    setErrors(prev => ({ ...prev, memberId: "" }));
+    return true;
+};
 
     const fetchInfoOrder = async (orderId) => {
         try {

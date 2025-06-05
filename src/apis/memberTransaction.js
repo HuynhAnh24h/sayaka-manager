@@ -8,10 +8,14 @@ export const getMemberInfo = async (memberId, userId) => {
         const response = await axios.get(`${API_BASE_URL}/member/${memberId}`, {
             headers: { userId }
         });
-        return response.data.data;
+        return { success: true, data: response.data.data };
     } catch (error) {
         console.error("Lỗi lấy dữ liệu thành viên:", error);
-        return null;
+
+        // Lấy tất cả lỗi từ server nếu có
+        const errorMessages = error.response?.data?.errors || [error.response?.data?.message] || ["Lỗi không xác định từ server!"];
+
+        return { success: false, errors: errorMessages };
     }
 };
 
@@ -24,7 +28,11 @@ export const createTransaction = async (transactionData, userId) => {
         return response.data;
     } catch (error) {
         console.error("Lỗi tạo giao dịch:", error);
-        return { status: "Error", message: error.message };
+
+        // Kiểm tra phản hồi từ server để lấy tất cả thông báo lỗi
+        const errorMessages = error.response?.data?.errors || error.response?.data?.message || "Lỗi không xác định!";
+
+        return { status: "Error", message: errorMessages };
     }
 };
 
@@ -37,7 +45,7 @@ export const useMemberPoints = async (data, userId) => {
         return response.data;
     } catch (error) {
         console.error("Lỗi sử dụng điểm:", error);
-        return { status: "Error", message: error.message };
+        return { status: "Error", message: error.message.response.message };
     }
 };
 

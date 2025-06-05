@@ -17,7 +17,6 @@ const UsePoin = ({ handleShow, reloadData }) => {
     const [errors, setErrors] = useState({ memberId: "" });
     const handleChange = ({ target: { name, value } }) => {
         setUsePointData(prev => ({ ...prev, [name]: value }));
-
         if (name === "pointUse" && dataFetch) {
             const pointUse = Number(value);
             const memberPoint = dataFetch.memberPoint;
