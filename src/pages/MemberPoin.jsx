@@ -7,7 +7,7 @@ import { Loading } from "../components";
 import { getTransactions } from "../apis/memberTransaction";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import nodata from"../assets/user.jpg"
+import nodata from "../assets/user.jpg"
 
 const MemberPoin = () => {
     const userId = useSelector((state) => state.auth.userId);
@@ -15,14 +15,14 @@ const MemberPoin = () => {
     const [loading, setLoading] = useState(true);
     const modalRef = useRef(null);
     const [activeTab, setActiveTab] = useState(null);
-    const [searchParams, setSearchParams] = useState({ 
-        restaurantId: "", 
-        memberId: "", 
-        page: 1, 
-        pageSize: 10, 
-        transactionType: 0, 
+    const [searchParams, setSearchParams] = useState({
+        restaurantId: "",
+        memberId: "",
+        page: 1,
+        pageSize: 10,
+        transactionType: 0,
         memberPhone: "",
-        memberName:""
+        memberName: ""
     });
     // Get All list
     console.log(searchParams)
@@ -50,7 +50,17 @@ const MemberPoin = () => {
 
     const changePage = (newPage) => {
         if (newPage < 1 || newPage > totalPages) return;
+
+        // Cập nhật trang mới
         setSearchParams((prev) => ({ ...prev, page: newPage }));
+
+        // Gọi API ngay sau khi đổi trang để tự động lọc dữ liệu
+        setLoading(true);
+        getTransactions({ ...searchParams, page: newPage }, userId)
+            .then((response) => {
+                if (response) setData(response);
+            })
+            .finally(() => setLoading(false));
     };
     const handleFilter = () => {
         setLoading(true);
@@ -146,10 +156,10 @@ const MemberPoin = () => {
                             </div>
                         </div>
                     )}
-                        </div>
-                    )}
-                </MainLayout>
-            );
+                </div>
+            )}
+        </MainLayout>
+    );
 };
 
-            export default MemberPoin;
+export default MemberPoin;
