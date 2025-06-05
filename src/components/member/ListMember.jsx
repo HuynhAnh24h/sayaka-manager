@@ -1,5 +1,6 @@
 import { formatDate, formatNumber,formatRestaurantName } from '../../helper/FormatData'
 const ListMmember = ({ data,paginationControls,  currentPage, totalPage }) => {
+    console.log(data)
     return (
         <>
             <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
@@ -30,7 +31,7 @@ const ListMmember = ({ data,paginationControls,  currentPage, totalPage }) => {
                                 {member.orderValue > 0 ? formatNumber(member.orderValue) : <p className="text-red-600 font-bold">-</p>}
                             </td>
                             <td className="px-4 py-3 text-center">{formatRestaurantName(member.restaurant)}</td>
-                            <td className="px-4 py-3 text-center">{member.orderId > 0 ? member.orderId : <p className="text-red-600 font-bold">-</p>}</td>
+                            <td className="px-4 py-3 text-center">{member.orderId ? member.orderId : <p className="text-red-600 font-bold">-</p>}</td>
                             <td className="px-4 py-3">{member.transactionTitle}</td>
                         </tr>
                     ))}
