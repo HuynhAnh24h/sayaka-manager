@@ -21,16 +21,23 @@ const MemberPoin = () => {
         page: 1, 
         pageSize: 10, 
         transactionType: 0, 
-        memberPhone: "" });
+        memberPhone: "",
+        memberName:""
+    });
     // Get All list
+    console.log(searchParams)
     useEffect(() => {
         setLoading(true);
         getTransactions(searchParams, userId)
             .then((response) => {
-                if (response) setData(response);
+                if (response) {
+                    console.log(response)
+                    setData(response)
+                };
             })
             .finally(() => setLoading(false));
-    }, [searchParams]);
+    }, []);
+
     const reloadData = () => {
         setLoading(true);
         getTransactions(searchParams, userId)
@@ -49,7 +56,9 @@ const MemberPoin = () => {
         setLoading(true);
         getTransactions(searchParams, userId)
             .then((response) => {
-                if (response) setData(response);
+                if (response) {
+                    setData(response)
+                };
             })
             .finally(() => setLoading(false));
     };

@@ -1,6 +1,5 @@
 import { formatDate, formatNumber,formatRestaurantName } from '../../helper/FormatData'
 const ListMmember = ({ data,paginationControls,  currentPage, totalPage }) => {
-    console.log(data)
     return (
         <>
             <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">

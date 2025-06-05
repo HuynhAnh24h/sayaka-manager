@@ -1,5 +1,4 @@
 import axios from "axios";
-import { CgLayoutGrid } from "react-icons/cg";
 
 const API_BASE_URL = "https://member.sayaka.vn/api";
 
