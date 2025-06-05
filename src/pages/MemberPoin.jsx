@@ -15,8 +15,14 @@ const MemberPoin = () => {
     const [loading, setLoading] = useState(true);
     const modalRef = useRef(null);
     const [activeTab, setActiveTab] = useState(null);
-    const [searchParams, setSearchParams] = useState({ restaurantId: "", memberId: "", page: 1, pageSize: 10, transactionType: 0, memberPhone: "" });
-
+    const [searchParams, setSearchParams] = useState({ 
+        restaurantId: "", 
+        memberId: "", 
+        page: 1, 
+        pageSize: 10, 
+        transactionType: 0, 
+        memberPhone: "" });
+    // Get All list
     useEffect(() => {
         setLoading(true);
         getTransactions(searchParams, userId)
@@ -39,7 +45,14 @@ const MemberPoin = () => {
         if (newPage < 1 || newPage > totalPages) return;
         setSearchParams((prev) => ({ ...prev, page: newPage }));
     };
-
+    const handleFilter = () => {
+        setLoading(true);
+        getTransactions(searchParams, userId)
+            .then((response) => {
+                if (response) setData(response);
+            })
+            .finally(() => setLoading(false));
+    };
     return (
         <MainLayout>
             <div className="flex flex-col sm:flex-row justify-between items-center mb-4 mt-3">
@@ -69,7 +82,9 @@ const MemberPoin = () => {
                 ))}
 
                 <div className="flex justify-start items-end">
-                    <button className="bg-gray-700 text-white w-[50%] rounded-md py-2 hover:bg-gray-800 transition">
+                    <button className="bg-gray-700 text-white w-[50%] rounded-md py-2 hover:bg-gray-800 transition"
+                        onClick={handleFilter}
+                    >
                         <FaFilter className="inline-block mr-2" /> Lọc
                     </button>
                 </div>
