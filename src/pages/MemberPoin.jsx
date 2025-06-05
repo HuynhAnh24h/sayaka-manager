@@ -64,6 +64,7 @@ const MemberPoin = () => {
     };
     const handleFilter = () => {
         setLoading(true);
+        setSearchParams((prev) => ({ ...prev, page: 1 }));
         getTransactions(searchParams, userId)
             .then((response) => {
                 if (response) {
