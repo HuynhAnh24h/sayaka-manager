@@ -68,10 +68,10 @@ const AddPoin = ({ handleShow, reloadData }) => {
         return false;
     }
 
-    setDataFetch(response.data);
-    setErrors(prev => ({ ...prev, memberId: "" }));
-    return true;
-};
+        setDataFetch(response.data);
+        setErrors(prev => ({ ...prev, memberId: "" }));
+        return true;
+    };
 
     const fetchInfoOrder = async (orderId) => {
         try {
