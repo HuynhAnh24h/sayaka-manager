@@ -1,14 +1,12 @@
 import { NavLink } from "react-router-dom"
-import { MdDashboard } from "react-icons/md"
-import { AiFillProduct } from "react-icons/ai"
-import { PiWarehouseFill } from "react-icons/pi"
-import { FaBox } from "react-icons/fa"
-import { FaFileExport } from "react-icons/fa6"
-import { BiSolidReport } from "react-icons/bi"
 import { MdOutlineRememberMe } from "react-icons/md"
 import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { logout } from "../stores/Auth/AuthSlice"
+import { FaNetworkWired } from "react-icons/fa"
+import { FaCode } from "react-icons/fa";
+
+
 const Sidebar = () => {
     const dispatch = useDispatch();
     const [menuStates, setMenuStates] = useState({});
@@ -32,8 +30,20 @@ const Sidebar = () => {
                                 Tích điểm thành viên
                             </NavLink>
                         </li>
+                        <li className="mb-2">
+                            <NavLink to="/ip-manager" className={({ isActive }) => isActive ? "text-gray-white bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all" : "hover:text-gray-white hover:bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all"}>
+                                <FaNetworkWired className="inline-block mr-2"/>
+                                Quản lý IP
+                            </NavLink>
+                        </li>
+                        <li className="mb-2">
+                            <NavLink to="/test-page-component" className={({ isActive }) => isActive ? "text-gray-white bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all" : "hover:text-gray-white hover:bg-gray-700 flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all"}>
+                                <FaCode className="inline-block mr-2"/>
+                                Developer Page
+                            </NavLink>
+                        </li>
 
-
+        
                     </ul>
                      
                 </div>
