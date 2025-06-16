@@ -1,12 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// Khởi tạo State
 const initialState = {
     userId: localStorage.getItem("userId") || null,
     restaurantId: localStorage.getItem("restaurantId") || null,
     restaurantName: localStorage.getItem("restaurantName") || "",
     userFullName: localStorage.getItem("userFullName") || "",
+    position: localStorage.getItem("position") || ""
 };
 
+// Slice để sử dụng state
 const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -17,13 +20,14 @@ const authSlice = createSlice({
             state.restaurantId = restaurantId;
             state.restaurantName = restaurantName;
             state.userFullName = userFullName;
-            state.position = position
+            state.position = position;
+
             // Lưu vào localStorage để duy trì trạng thái sau khi refresh
             localStorage.setItem("userId", userId);
             localStorage.setItem("restaurantId", restaurantId);
             localStorage.setItem("restaurantName", restaurantName);
             localStorage.setItem("userFullName", userFullName);
-            localStorage.setItem("position",position)
+            localStorage.setItem("position",position);
 
         },
         logout: (state) => {
@@ -31,7 +35,7 @@ const authSlice = createSlice({
             state.restaurantId = null;
             state.restaurantName = "";
             state.userFullName = "";
-            state.position = ""
+            state.position = "";
 
             // Xóa dữ liệu khỏi localStorage khi đăng xuất
             localStorage.removeItem("userId");

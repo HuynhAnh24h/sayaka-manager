@@ -4,7 +4,7 @@ import { IpManager, Login,MemberPoin, NotPound, TestPageComponents } from "./pag
 import { ToastContainer } from "react-toastify"
 import { useSelector } from "react-redux"
 const App = () => {
-  const userRole = useSelector((state)=>state.auth.position)
+  const userRole = useSelector(state=>state.auth.position)
   return (
     <>
       <BrowserRouter>
