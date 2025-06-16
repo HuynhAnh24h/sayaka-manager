@@ -19,10 +19,11 @@ const Login = () => {
       const response = await axios.post("https://member.sayaka.vn/api/auth/login", dataLogin);
       if (response.data.data) {
         dispatch(login({
-          userId: response.data.data.userId || "Không lấy được ID người dùng",
-          restaurantId: response.data.data.restaurantId || "Không lấy được ID nhà hàng",
-          restaurantName: response.data.data.restaurantName || "Không lấy được tên nhà hàng",
-          userFullName: response.data.data.userFullName || "Không lấy được tên người dùng"
+          userId: response.data.data.userId || "Không lấy được userId",
+          restaurantId: response.data.data.restaurantId || "Không lấy được restaurantId",
+          restaurantName: response.data.data.restaurantName || "Không lấy được restaurantName",
+          userFullName: response.data.data.userFullName || "Không lấy được userFullName",
+          position: response.data.data.position || "Không lấy position"
         }));
 
         window.location.href = "/"

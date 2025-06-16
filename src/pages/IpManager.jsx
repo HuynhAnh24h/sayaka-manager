@@ -12,7 +12,7 @@ const IpManager = () => {
     const [loading, setLoading] = useState(false)
     // Get All list
     useEffect(() => {
-        setLoading(true);
+        setLoading(true)
         getListIP(userId)
             .then((response) => {
                 if (response) {
