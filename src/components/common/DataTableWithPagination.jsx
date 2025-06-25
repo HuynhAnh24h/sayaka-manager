@@ -1,65 +1,91 @@
-import { useState, useMemo } from "react";
+import React from "react";
 
-const DataTableWithPagination = ({ data, columns, itemsPerPage = 10 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+const generatePageNumbers = (currentPage, totalPages) => {
+    const delta = 2; // số trang hiển thị trước/sau trang hiện tại
+    const range = [];
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+    for (let i = Math.max(1, currentPage - delta); i <= Math.min(totalPages, currentPage + delta); i++) {
+        range.push(i);
+    }
 
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return data.slice(start, start + itemsPerPage);
-  }, [data, currentPage, itemsPerPage]);
-
-  return (
-    <div className="space-y-4">
-      {/* TABLE */}
-      <table className="w-full text-sm border border-gray-200 rounded-md overflow-hidden">
-        <thead className="bg-gray-100 dark:bg-gray-800">
-          <tr>
-            {columns.map((col) => (
-              <th key={col.key} className="text-left px-4 py-2 font-semibold text-white text-lg">
-                {col.label} 
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((row, idx) => (
-            <tr key={idx} className="border-t">
-              {columns.map((col) => (
-                <td key={col.key} className="px-4 py-2">
-                  {row[col.key]}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* PAGINATION */}
-      <div className="flex items-center justify-between px-2">
-        <span>
-          Trang {currentPage} / {totalPages}
-        </span>
-        <div className="flex gap-2">
-          <button
-            className="border rounded-md px-2 py-1 text-sm"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-          >
-           <span>Trái</span>
-          </button>
-          <button
-            className="border rounded-md px-2 py-1 text-sm"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-          >
-            <span>Phải</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    return range;
 };
 
-export default DataTableWithPagination;
+
+const DataTableWithServerPagination = ({
+    data,
+    columns,
+    currentPage,
+    totalPages,
+    onPageChange,
+}) => {
+    return (
+        <div className="space-y-4">
+            {/* Table */}
+            <table className="w-full text-sm border rounded overflow-hidden">
+                <thead className="bg-gray-100 text-gray-700">
+                    <tr>
+                        {columns.map((col) => (
+                            <th key={col.key} className="px-4 py-2 text-left border-b">
+                                {col.label}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map((row, idx) => (
+                        <tr key={idx} className="even:bg-gray-50">
+                            {columns.map((col) => (
+                                <td key={col.key} className="px-4 py-2 border-t">
+                                    {row[col.key]}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {/* Pagination */}
+            <div className="flex justify-between items-center flex-wrap gap-4">
+                <p className="text-sm text-gray-600">
+                    Trang {currentPage} / {totalPages}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-1">
+                    <button
+                        onClick={() => onPageChange(currentPage - 1)}
+                        disabled={currentPage <= 1}
+                        className="px-3 py-1 text-sm border rounded disabled:opacity-50"
+                    >
+                        Trước
+                    </button>
+
+                    {/* Các nút số trang */}
+                    {generatePageNumbers(currentPage, totalPages).map((page) => (
+                        <button
+                            key={page}
+                            onClick={() => onPageChange(page)}
+                            className={`px-3 py-1 text-sm border rounded ${page === currentPage
+                                    ? "bg-blue-600 text-white font-semibold"
+                                    : "hover:bg-gray-100"
+                                }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+
+                    <button
+                        onClick={() => onPageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages}
+                        className="px-3 py-1 text-sm border rounded disabled:opacity-50"
+                    >
+                        Sau
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    );
+};
+
+export default DataTableWithServerPagination;
