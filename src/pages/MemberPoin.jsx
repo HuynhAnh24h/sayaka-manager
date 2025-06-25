@@ -3,11 +3,12 @@ import MainLayout from "../layout/MainLayout";
 import { FaFilter } from "react-icons/fa";
 import { ListMember, AddPoin, UsePoin } from "../components/member";
 import { useSelector } from "react-redux";
-import { Loading } from "../components";
+import { Loading,Nodata } from "../components";
 import { getTransactions } from "../apis/memberTransaction";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import nodata from "../assets/user.jpg"
+import { useDispatch } from "react-redux";
+import { setRestaurantId, setRestaurantName } from "../stores/Restaurant/RestaurantSlice";
 
 
 
@@ -17,6 +18,7 @@ const MemberPoin = () => {
     const [loading, setLoading] = useState(true);
     const modalRef = useRef(null);
     const [activeTab, setActiveTab] = useState(null);
+    const dispatch = useDispatch();
     const [searchParams, setSearchParams] = useState({
         restaurantId: "",
         memberId: "",
@@ -33,9 +35,16 @@ const MemberPoin = () => {
         getTransactions(searchParams, userId)
             .then((response) => {
                 if (response) {
-                    setData(response)
-                    console.log(response)
-                };
+                setData(response);
+
+                if (response.transactions && response.transactions.length > 0) {
+                    const firstTransaction = response.transactions[0];
+                    dispatch(setRestaurantId(firstTransaction.restaurantId));
+                    dispatch(setRestaurantName(firstTransaction.restaurant));
+                }
+
+                console.log(response);
+            }
             })
             .finally(() => setLoading(false));
     }, []);
@@ -222,30 +231,7 @@ const MemberPoin = () => {
                             </button>
                         </div>
                     } /> : (
-                        <div className="flex flex-col ">
-                            <div className="text-center py-10">
-                                <img src={nodata} className="w-full h-full" />
-                                <p className="text-gray-500">Không có dữ liệu thành viên.</p>
-                            </div>
-                            <div className="flex justify-center items-center gap-2 mt-4">
-                                <button disabled={searchParams.page === 1} onClick={() => changePage(searchParams.page - 1)}
-                                    className={`px-1 py-1 rounded-sm ${searchParams.page === 1 ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}>
-                                    <MdKeyboardDoubleArrowLeft size={25} />
-                                </button>
-
-                                {[...Array(totalPages)].map((_, idx) => (
-                                    <button key={idx} onClick={() => changePage(idx + 1)}
-                                        className={`px-2 py-1 rounded-sm ${searchParams.page === idx + 1 ? "bg-gray-700 text-white" : "bg-gray-300 text-gray-700 hover:bg-gray-400"}`}>
-                                        {idx + 1}
-                                    </button>
-                                ))}
-
-                                <button disabled={searchParams.page === totalPages} onClick={() => changePage(searchParams.page + 1)}
-                                    className={`px-1 py-1 rounded-sm ${searchParams.page === totalPages ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}>
-                                    <MdKeyboardDoubleArrowRight size={25} />
-                                </button>
-                            </div>
-                        </div>
+                        <Nodata />
                     )}
                 </div>
             )}

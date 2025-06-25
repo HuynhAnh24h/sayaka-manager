@@ -3,7 +3,7 @@ import { MdOutlineRememberMe } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../stores/Auth/AuthSlice";
 import { FaNetworkWired, FaCode } from "react-icons/fa";
-
+import { FaChartArea } from "react-icons/fa";
 const Sidebar = () => {
     const dispatch = useDispatch()
     const position = useSelector(state => state.auth.position)
@@ -12,6 +12,7 @@ const Sidebar = () => {
             <div className="text-lg font-bold mb-6 text-center">Sayaka Manager</div>
             <div className="mb-6">
                 <ul className="flex flex-col space-y-4">
+                   
                     <li className="mb-2">
                         <NavLink 
                             to="/" 
@@ -21,6 +22,17 @@ const Sidebar = () => {
                         >
                             <MdOutlineRememberMe className="inline-block mr-2" />
                             Tích điểm thành viên
+                        </NavLink>
+                    </li>
+                     <li className="mb-2">
+                        <NavLink 
+                            to="/member-balance" 
+                            className={({ isActive }) => 
+                                `flex items-center font-bold text-md px-5 py-2 rounded-sm transition-all ${isActive ? "bg-gray-700 text-white" : "hover:bg-gray-700 hover:text-white"}`
+                            }
+                        >
+                           <FaChartArea className="inline-block mr-2" />
+                            Thống kê
                         </NavLink>
                     </li>
                     {position !== "Cashier" && (

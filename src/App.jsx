@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import PrivateRoute from "./components/common/PrivateRoute"
-import { IpManager, Login,MemberPoin, NotPound, TestPageComponents } from "./pages"
+import { IpManager, Login,MemberPoin, NotPound, TestPageComponents,Dashboard } from "./pages"
 import { ToastContainer } from "react-toastify"
 import { useSelector } from "react-redux"
 import { ModalProvider } from "./context/ModalContent"
@@ -13,6 +13,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
             <Route element={<PrivateRoute />}>
               <Route path="/" element={<MemberPoin />} title={'Lịch sử giao dịch'}/>
+              <Route path="/member-balance" element={<Dashboard />} title={'Lịch sử giao dịch'}/>
               {
                 userRole === "Cashier" ? (<></>):(
                   <>
