@@ -3,7 +3,19 @@ import { FaTrashAlt } from "react-icons/fa"
 import { MdEdit } from "react-icons/md"
 import { FaCheck } from "react-icons/fa"
 import { IoMdClose } from "react-icons/io"
+import { useModal } from "../../context/ModalContent"
+import Modal from '../themes/modal/Modal'
+import ModalContent from "../themes/modal/ModalContent"
 const ListIP = ({data,handelGetOneItem,handleDelete}) => {
+    const { modal, openModal, closeModal } = useModal()
+        const filedAddIp = [
+        { name: "ipName", placeholder: "Nhập tên IP", label:"Tên IP"},
+        { name: "ipValue", placeholder: "Giá trị của IP", type: "email", label:"Giá trị IP"},
+        { name: "isEnabled", placeholder: "Trạng thái của IP", type: "select", label:"Trạng thái"},
+    ]
+      const handleAddIp = (data)=>{
+        console.log(data)
+    }
     return (
         <>
             <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
@@ -29,7 +41,9 @@ const ListIP = ({data,handelGetOneItem,handleDelete}) => {
                             <td className="px-4 py-3 flex justify-center items-center gap-2">
                                 <button 
                                 // Truyền ID vào cho hàm handle sử dụng
-                                onClick={() => handelGetOneItem(value.id)}
+                                onClick={() => (
+                                    openModal("modal2"), 
+                                    handelGetOneItem(value.id))}
                                 className='bg-yellow-600 text-white rounded-md py-2 hover:bg-yellow-800 transition px-5
                                     font-semibold   
                                 '><MdEdit /></button>
@@ -41,6 +55,9 @@ const ListIP = ({data,handelGetOneItem,handleDelete}) => {
                     ))}
                 </tbody>
             </table>
+            <Modal isOpen={modal === "modal2"} onClose={closeModal} title="Sửa IP">
+                    <ModalContent fields={ filedAddIp} handleSubmit={handleAddIp} />
+            </Modal>
         </>
     )
 }

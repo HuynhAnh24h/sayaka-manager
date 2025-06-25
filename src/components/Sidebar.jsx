@@ -7,7 +7,6 @@ import { FaNetworkWired, FaCode } from "react-icons/fa";
 const Sidebar = () => {
     const dispatch = useDispatch()
     const position = useSelector(state => state.auth.position)
-    console.log(position)
     return (
         <div className="w-64 h-full bg-gray-800 text-white p-4 relative">
             <div className="text-lg font-bold mb-6 text-center">Sayaka Manager</div>

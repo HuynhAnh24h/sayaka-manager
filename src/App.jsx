@@ -3,6 +3,7 @@ import PrivateRoute from "./components/common/PrivateRoute"
 import { IpManager, Login,MemberPoin, NotPound, TestPageComponents } from "./pages"
 import { ToastContainer } from "react-toastify"
 import { useSelector } from "react-redux"
+import { ModalProvider } from "./context/ModalContent"
 const App = () => {
   const userRole = useSelector(state=>state.auth.position)
   return (
@@ -15,7 +16,11 @@ const App = () => {
               {
                 userRole === "Cashier" ? (<></>):(
                   <>
-                    <Route path="/ip-manager" element={<IpManager />} title={'Quản lý IP'}/>
+                    <Route path="/ip-manager" element={
+                    <ModalProvider>
+                      <IpManager />
+                    </ModalProvider>
+                    } title={'Quản lý IP'}/>
                     <Route path="/test-page-component" element={<TestPageComponents />} title={'Dev Page'}/>
                   </>
                 )

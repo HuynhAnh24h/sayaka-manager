@@ -9,6 +9,8 @@ import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import nodata from "../assets/user.jpg"
 
+
+
 const MemberPoin = () => {
     const userId = useSelector((state) => state.auth.userId);
     const [data, setData] = useState(null);
@@ -22,7 +24,8 @@ const MemberPoin = () => {
         pageSize: 10,
         transactionType: 0,
         memberPhone: "",
-        memberName: ""
+        memberName: "",
+        restaurantName: "",
     });
     // Get All list
     useEffect(() => {
@@ -31,6 +34,7 @@ const MemberPoin = () => {
             .then((response) => {
                 if (response) {
                     setData(response)
+                    console.log(response)
                 };
             })
             .finally(() => setLoading(false));
@@ -71,6 +75,58 @@ const MemberPoin = () => {
             })
             .finally(() => setLoading(false));
     };
+
+    const renderPageButtons = () => {
+        const pages = [];
+        const currentPage = searchParams.page;
+        const delta = 2; // số trang trước/sau trang hiện tại
+
+        const range = (start, end) => {
+            return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+        };
+
+        const leftBound = Math.max(2, currentPage - delta);
+        const rightBound = Math.min(totalPages - 1, currentPage + delta);
+
+        // Luôn có trang 1
+        pages.push(1);
+
+        // Nếu cần dấu "..." phía trước
+        if (leftBound > 2) {
+            pages.push("...");
+        }
+
+        // Các trang ở giữa
+        pages.push(...range(leftBound, rightBound));
+
+        // Nếu cần dấu "..." phía sau
+        if (rightBound < totalPages - 1) {
+            pages.push("...");
+        }
+
+        // Luôn có trang cuối
+        if (totalPages > 1) {
+            pages.push(totalPages);
+        }
+
+        // Render JSX
+        return pages.map((p, idx) =>
+            p === "..." ? (
+                <span key={idx} className="px-2 text-gray-600">...</span>
+            ) : (
+                <button
+                    key={idx}
+                    onClick={() => changePage(p)}
+                    className={`px-2 py-1 rounded-sm ${currentPage === p
+                            ? "bg-gray-700 text-white"
+                            : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                        }`}
+                >
+                    {p}
+                </button>
+            )
+        );
+    };
     return (
         <MainLayout>
             <div className="flex flex-col sm:flex-row justify-between items-center mb-4 mt-3">
@@ -91,14 +147,55 @@ const MemberPoin = () => {
             )}
 
             <div className="mb-4 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-                {["memberName", "memberPhone", "startDate", "endDate"].map((field, idx) => (
+                {["memberName", "memberPhone", "startDate", "endDate", "restaurantName"].map((field, idx) => (
                     <div key={idx} className="flex flex-col">
-                        <label className="block text-sm font-medium mb-1">{field === "memberName" ? "Tên thành viên" : field === "memberPhone" ? "Số điện thoại" : field === "startDate" ? "Ngày bắt đầu" : "Ngày kết thúc"}</label>
-                        <input type={field.includes("Date") ? "date" : "text"} className="w-full px-3 py-2 border border-gray-600 rounded-md"
-                            value={searchParams[field]} onChange={(e) => setSearchParams((prev) => ({ ...prev, [field]: e.target.value }))} />
+                        <label className="block text-sm font-medium mb-1">
+                            {field === "memberName"
+                                ? "Tên thành viên"
+                                : field === "memberPhone"
+                                    ? "Số điện thoại"
+                                    : field === "startDate"
+                                        ? "Ngày bắt đầu"
+                                        : field === "endDate"
+                                            ? "Ngày kết thúc"
+                                            : "Tên nhà hàng"}
+                        </label>
+
+                        {field === "restaurantName" ? (
+                            <select
+                                className="w-full px-3 py-2 border border-gray-600 rounded-md"
+                                value={searchParams.restaurantId}
+                                onChange={(e) =>
+                                    setSearchParams((prev) => ({ ...prev, restaurantId: e.target.value }))
+                                }
+                            >
+
+                                {
+                                    data ? (
+                                        data.transactions
+                                            .filter((value, index, self) =>
+                                                index === self.findIndex(v => v.restaurant === value.restaurant)
+                                            )
+                                            .map((value) => (
+                                                <option key={value.restaurantId} value={value.restaurantId}>
+                                                    {value.restaurant}
+                                                </option>
+                                            ))
+                                    ) : null}
+                                <option value="">Tất cả nhà hàng</option>
+                            </select>
+                        ) : (
+                            <input
+                                type={field.includes("Date") ? "date" : "text"}
+                                className="w-full px-3 py-2 border border-gray-600 rounded-md"
+                                value={searchParams[field]}
+                                onChange={(e) =>
+                                    setSearchParams((prev) => ({ ...prev, [field]: e.target.value }))
+                                }
+                            />
+                        )}
                     </div>
                 ))}
-
                 <div className="flex justify-start items-end">
                     <button className="bg-gray-700 text-white w-[50%] rounded-md py-2 hover:bg-gray-800 transition"
                         onClick={handleFilter}
@@ -112,21 +209,16 @@ const MemberPoin = () => {
                 <div className="overflow-auto min-h-[calc(100vh-300px)]">
                     {data && data.transactions?.length > 0 ? <ListMember data={data.transactions} totalPage={totalPages} currentPage={searchParams.page} paginationControls={
                         <div className="flex justify-center items-center gap-2 mt-4">
-                            <button disabled={searchParams.page === 1} onClick={() => changePage(searchParams.page - 1)}
-                                className={`px-1 py-1 rounded-sm ${searchParams.page === 1 ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}>
-                                <MdKeyboardDoubleArrowLeft size={25} />
+                            {/* Prev */}
+                            <button onClick={() => changePage(searchParams.page - 1)} disabled={searchParams.page === 1} className="px-2 py-1">
+                                <MdKeyboardDoubleArrowLeft />
                             </button>
 
-                            {[...Array(totalPages)].map((_, idx) => (
-                                <button key={idx} onClick={() => changePage(idx + 1)}
-                                    className={`px-2 py-1 rounded-sm ${searchParams.page === idx + 1 ? "bg-gray-700 text-white" : "bg-gray-300 text-gray-700 hover:bg-gray-400"}`}>
-                                    {idx + 1}
-                                </button>
-                            ))}
+                            {renderPageButtons()}
 
-                            <button disabled={searchParams.page === totalPages} onClick={() => changePage(searchParams.page + 1)}
-                                className={`px-1 py-1 rounded-sm ${searchParams.page === totalPages ? "bg-gray-400 text-gray-700 cursor-not-allowed" : "bg-gray-700 text-white hover:bg-gray-800"}`}>
-                                <MdKeyboardDoubleArrowRight size={25} />
+                            {/* Next */}
+                            <button onClick={() => changePage(searchParams.page + 1)} disabled={searchParams.page === totalPages} className="px-2 py-1">
+                                <MdKeyboardDoubleArrowRight />
                             </button>
                         </div>
                     } /> : (
